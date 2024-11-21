@@ -37,7 +37,7 @@ export default {
               <div>
                 <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
                   <h1 class="text-center">Login</h1>
-                  <div class="text-subtitle-1 font-weight-bold">Account</div>
+                  <div class="text-subtitle-1 font-weight-bold">Email</div>
 
                   <v-text-field
                     class="font-weight-bold"

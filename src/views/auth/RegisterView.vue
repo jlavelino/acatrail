@@ -36,8 +36,20 @@ export default {
             <v-col cols="12" md="6" class="mx-auto pt-10">
               <div>
                 <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
-                  <h1 class="text-center">Login</h1>
-                  <div class="text-subtitle-1 font-weight-bold">Account</div>
+                  <h1 class="text-center">Register</h1>
+                  <v-row>
+                    <!-- First Name on the left -->
+
+                    <v-col cols="6">
+                      <v-text-field label="Firstname" variant="outlined"></v-text-field>
+                    </v-col>
+
+                    <!-- Last Name on the right -->
+                    <v-col cols="6">
+                      <v-text-field label="Lastname" variant="outlined"></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <div class="text-subtitle-1 font-weight-bold">Email</div>
 
                   <v-text-field
                     class="font-weight-bold"
@@ -64,15 +76,15 @@ export default {
                   <v-divider></v-divider>
                   <h5csdcsdfsdf></h5csdcsdfsdf>
                   <h5 class="text-center my-3">
-                    Don't have an account? Click here to
-                    <RouterLink to="/register">
+                    Already have account? Click here to
+                    <RouterLink to="/">
                       <a
                         class="text-blue text-decoration-none"
                         href="#"
                         rel="noopener noreferrer"
                         target="_blank"
                       >
-                        Register <v-icon icon="mdi-chevron-right"></v-icon> </a
+                        Login<v-icon icon="mdi-chevron-right"></v-icon> </a
                     ></RouterLink>
                   </h5>
                 </v-card>
