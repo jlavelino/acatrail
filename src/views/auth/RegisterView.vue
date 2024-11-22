@@ -3,6 +3,9 @@ import { ref } from 'vue'
 
 const theme = ref('light')
 
+</script>
+
+
 function onClick() {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
 }
@@ -21,8 +24,13 @@ const isBouncing = ref(true)
         >
           <v-row class="d-flex align-center justify-center" style="width: 100%">
             <v-col cols="12" md="6" class="mx-auto pb-16">
+
+              <!-- Add the bounce-animation class -->
+              <v-img class="bounce-animation" src="ew.png" alt="Image" height="300" />
+
               <!-- Add bouncing class dynamically -->
               <v-img src="ew.png" alt="" height="300" :class="isBouncing ? 'bouncing' : ''" />
+
               <h3 class="text-center">
                 It is your academic buddy. It will help you to organize tasks, assignments, and
                 projects, keeping them on track and focused throughout your academic journey.
@@ -125,7 +133,9 @@ main {
   }
 }
 
+.bounce-animation {
 .bouncing {
+
   animation: bounce 2.5s infinite;
 }
 
