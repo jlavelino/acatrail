@@ -2,6 +2,10 @@
 import { ref } from 'vue'
 
 const theme = ref('light')
+
+function onClick() {
+  theme.value = theme.value === 'light' ? 'dark' : 'light'
+}
 </script>
 
 <script>
@@ -22,8 +26,7 @@ export default {
         >
           <v-row class="d-flex align-center justify-center" style="width: 100%">
             <v-col cols="12" md="6" class="mx-auto pb-16">
-              <!-- Add the bounce-animation class -->
-              <v-img class="bounce-animation" src="ew.png" alt="Image" height="300" />
+              <v-img src="ew.png" alt="" height="300" />
               <h3 class="text-center">
                 It is your academic buddy. It will help you to organize tasks, assignments, and
                 projects, keeping them on track and focused throughout your academic journey.
@@ -59,6 +62,7 @@ export default {
 
                   <v-btn class="mb-8" color="blue" size="large" block> Log In </v-btn>
                   <v-divider></v-divider>
+                  <h5csdcsdfsdf></h5csdcsdfsdf>
                   <h5 class="text-center my-3">
                     Don't have an account? Click here to
                     <RouterLink to="/register">
@@ -91,21 +95,6 @@ main {
   background-attachment: fixed;
   background-position: center;
   height: 100vh;
-}
-
-/* Bounce animation */
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.bounce-animation {
-  animation: bounce 2.5s infinite;
 }
 
 /* Apply a custom font to the entire app */
