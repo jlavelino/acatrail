@@ -2,10 +2,6 @@
 import { ref } from 'vue'
 
 const theme = ref('light')
-
-function onClick() {
-  theme.value = theme.value === 'light' ? 'dark' : 'light'
-}
 </script>
 
 <script>
@@ -26,7 +22,8 @@ export default {
         >
           <v-row class="d-flex align-center justify-center" style="width: 100%">
             <v-col cols="12" md="6" class="mx-auto pb-16">
-              <v-img src="ew.png" alt="" height="300" />
+              <!-- Add the bounce-animation class -->
+              <v-img class="bounce-animation" src="ew.png" alt="Image" height="300" />
               <h3 class="text-center">
                 It is your academic buddy. It will help you to organize tasks, assignments, and
                 projects, keeping them on track and focused throughout your academic journey.
@@ -37,16 +34,26 @@ export default {
               <div>
                 <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
                   <h1 class="text-center">Register</h1>
-                  <v-row>
+                  <v-row class="pt-3">
                     <!-- First Name on the left -->
 
                     <v-col cols="6">
-                      <v-text-field label="Firstname" variant="outlined"></v-text-field>
+                      <v-text-field
+                        class="font-weight-bold"
+                        density="compact"
+                        label="Firstname"
+                        variant="outlined"
+                      ></v-text-field>
                     </v-col>
 
                     <!-- Last Name on the right -->
                     <v-col cols="6">
-                      <v-text-field label="Lastname" variant="outlined"></v-text-field>
+                      <v-text-field
+                        class="font-weight-bold"
+                        density="compact"
+                        label="Lastname"
+                        variant="outlined"
+                      ></v-text-field>
                     </v-col>
                   </v-row>
                   <div class="text-subtitle-1 font-weight-bold">Email</div>
@@ -74,7 +81,6 @@ export default {
 
                   <v-btn class="mb-8" color="blue" size="large" block> Log In </v-btn>
                   <v-divider></v-divider>
-                  <h5csdcsdfsdf></h5csdcsdfsdf>
                   <h5 class="text-center my-3">
                     Already have account? Click here to
                     <RouterLink to="/">
@@ -107,6 +113,21 @@ main {
   background-attachment: fixed;
   background-position: center;
   height: 100vh;
+}
+
+/* Bounce animation */
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce-animation {
+  animation: bounce 2.5s infinite;
 }
 
 /* Apply a custom font to the entire app */
