@@ -2,13 +2,7 @@
 import { ref } from 'vue'
 
 const theme = ref('light')
-
-function onClick() {
-  theme.value = theme.value === 'light' ? 'dark' : 'light'
-}
-
-// Control bouncing
-const isBouncing = ref(true)
+const visible = ref(false) // Define `visible` here
 </script>
 
 <template>
@@ -21,8 +15,8 @@ const isBouncing = ref(true)
         >
           <v-row class="d-flex align-center justify-center" style="width: 100%">
             <v-col cols="12" md="6" class="mx-auto pb-16">
-              <!-- Add bouncing class dynamically -->
-              <v-img src="ew.png" alt="" height="300" :class="isBouncing ? 'bouncing' : ''" />
+              <!-- Add the bounce-animation class -->
+              <v-img class="bounce-animation" src="ew.png" alt="Image" height="300" />
               <h3 class="text-center">
                 It is your academic buddy. It will help you to organize tasks, assignments, and
                 projects, keeping them on track and focused throughout your academic journey.
@@ -35,7 +29,6 @@ const isBouncing = ref(true)
                   <h1 class="text-center">Register</h1>
                   <v-row class="pt-3">
                     <!-- First Name on the left -->
-
                     <v-col cols="6">
                       <v-text-field
                         class="font-weight-bold"
@@ -55,8 +48,8 @@ const isBouncing = ref(true)
                       ></v-text-field>
                     </v-col>
                   </v-row>
-                  <div class="text-subtitle-1 font-weight-bold">Email</div>
 
+                  <div class="text-subtitle-1 font-weight-bold">Email</div>
                   <v-text-field
                     class="font-weight-bold"
                     density="compact"
@@ -66,7 +59,6 @@ const isBouncing = ref(true)
                   ></v-text-field>
 
                   <div class="text-subtitle-1 font-weight-bold">Password</div>
-
                   <v-text-field
                     :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
                     :type="visible ? 'text' : 'password'"
@@ -78,10 +70,10 @@ const isBouncing = ref(true)
                     @click:append-inner="visible = !visible"
                   ></v-text-field>
 
-                  <v-btn class="mb-8" color="blue" size="large" block> Log In </v-btn>
+                  <v-btn class="mb-8" color="blue" size="large" block> Register </v-btn>
                   <v-divider></v-divider>
                   <h5 class="text-center my-3">
-                    Already have account? Click here to
+                    Already have an account? Click here to
                     <RouterLink to="/">
                       <a
                         class="text-blue text-decoration-none"
@@ -89,7 +81,7 @@ const isBouncing = ref(true)
                         rel="noopener noreferrer"
                         target="_blank"
                       >
-                        Login<v-icon icon="mdi-chevron-right"></v-icon> </a
+                        Login <v-icon icon="mdi-chevron-right"></v-icon> </a
                     ></RouterLink>
                   </h5>
                 </v-card>
@@ -114,7 +106,7 @@ main {
   height: 100vh;
 }
 
-/* Bouncing animation */
+/* Bounce animation */
 @keyframes bounce {
   0%,
   100% {
@@ -125,7 +117,7 @@ main {
   }
 }
 
-.bouncing {
+.bounce-animation {
   animation: bounce 2.5s infinite;
 }
 
