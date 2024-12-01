@@ -1,80 +1,49 @@
 <script setup>
 import { ref } from 'vue'
-
+import AppLayout from '@/components/layout/AppLayout.vue'
+import LoginForm from '@/components/layout/auth/LoginForm.vue'
 const theme = ref('light')
 const visible = ref(false) // Define `visible` here
 </script>
 
 <template>
-  <v-responsive class="border rounded">
-    <v-app :theme="theme">
-      <v-main>
-        <v-container
-          class="d-flex align-center justify-center"
-          style="height: 100vh; min-height: 100vh"
-        >
-          <v-row class="d-flex align-center justify-center" style="width: 100%">
-            <v-col cols="12" md="6" class="mx-auto pb-16">
-              <!-- Add the bounce-animation class -->
-              <v-img class="bounce-animation" src="ew.png" alt="Image" height="300" />
-              <h3 class="text-center">
-                It is your academic buddy. It will help you to organize tasks, assignments, and
-                projects, keeping them on track and focused throughout your academic journey.
-              </h3>
-            </v-col>
+  <AppLayout>
+    <template #content>
+      <v-row class="d-flex align-center justify-center" style="width: 100%">
+        <v-col cols="12" md="6" class="mx-auto pb-16">
+          <!-- Add the bounce-animation class -->
+          <v-img class="bounce-animation" src="ew.png" alt="Image" height="300" />
+          <h3 class="text-center">
+            It is your academic buddy. It will help you to organize tasks, assignments, and
+            projects, keeping them on track and focused throughout your academic journey.
+          </h3>
+        </v-col>
 
-            <v-col cols="12" md="6" class="mx-auto pt-10">
-              <div>
-                <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
-                  <h1 class="text-center">Login</h1>
-                  <div class="text-subtitle-1 font-weight-bold">Email</div>
-
-                  <v-text-field
-                    class="font-weight-bold"
-                    density="compact"
-                    placeholder="Email address"
-                    prepend-inner-icon="mdi-email-outline"
-                    variant="outlined"
-                  ></v-text-field>
-
-                  <div class="text-subtitle-1 font-weight-bold">Password</div>
-
-                  <v-text-field
-                    :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-                    :type="visible ? 'text' : 'password'"
-                    class="font-weight-bold"
-                    density="compact"
-                    placeholder="Enter your password"
-                    prepend-inner-icon="mdi-lock-outline"
-                    variant="outlined"
-                    @click:append-inner="visible = !visible"
-                  ></v-text-field>
-
-                  <v-btn class="mb-8" color="blue" size="large" block> Log In </v-btn>
-                  <v-divider></v-divider>
-                  <h5 class="text-center my-3">
-                    Don't have an account? Click here to
-                    <RouterLink to="/register">
-                      <a
-                        class="text-blue text-decoration-none"
-                        href="#"
-                        rel="noopener noreferrer"
-                        target="_blank"
-                      >
-                        Register <v-icon icon="mdi-chevron-right"></v-icon> </a
-                    ></RouterLink>
-                  </h5>
-                </v-card>
-              </div>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-main>
-      <v-footer class="text-center" color="white" border app>
-        <div class="d-flex justify-center align-center w-100">Copyright | AcaTrail Website</div>
-      </v-footer>
-    </v-app>
-  </v-responsive>
+        <v-col cols="12" md="6" class="mx-auto pt-10">
+          <div>
+            <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
+              <h1 class="text-center">Login</h1>
+              <v-divider></v-divider>
+              <LoginForm> </LoginForm>
+              <v-divider></v-divider>
+              <h5 class="text-center my-3">
+                Don't have an account? Click here to
+                <RouterLink to="/register">
+                  <a
+                    class="text-blue text-decoration-none"
+                    href="#"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Register <v-icon icon="mdi-chevron-right"></v-icon> </a
+                ></RouterLink>
+              </h5>
+            </v-card>
+          </div>
+        </v-col>
+      </v-row>
+    </template>
+  </AppLayout>
 </template>
 
 <style scoped>
