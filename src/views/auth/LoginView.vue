@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import LoginForm from '@/components/layout/auth/LoginForm.vue'
+import LoginForm from '@/components/auth/LoginForm.vue'
+//import AppLayout from '@/components/layout/AppLayout.vue'
+//import LoginForm from '@/components/layout/auth/LoginForm.vue'
 const theme = ref('light')
 const visible = ref(false) // Define `visible` here
 </script>
