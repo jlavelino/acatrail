@@ -7,7 +7,7 @@ import {
 } from '@/utils/validators'
 import { ref } from 'vue'
 import { supabase, formActionDefault } from '@/utils/supabase.js'
-import AlertNotification from '../common/alertNotification.vue'
+import AlertNotification from '../common/AlertNotification.vue'
 
 // Initialize form reference
 const refVForm = ref()
