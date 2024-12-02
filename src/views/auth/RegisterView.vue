@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import RegisterForm from '@/components/layout/auth/RegisterForm.vue'
+import RegisterForm from '@/components/auth/RegisterForm.vue'
+//import AppLayout from '@/components/layout/AppLayout.vue'
+//import RegisterForm from '@/components/layout/auth/RegisterForm.vue'
 
 const theme = ref('light')
 const visible = ref(false) // Define `visible` here
