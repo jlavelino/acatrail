@@ -8,6 +8,10 @@ import {
 import { ref } from 'vue'
 import { supabase, formActionDefault } from '@/utils/supabase.js'
 import AlertNotification from '../common/AlertNotification.vue'
+import { useRouter } from 'vue-router'
+
+// Utilize pre-defined vue functions
+const router = useRouter()
 
 // Initialize form reference
 const refVForm = ref()
@@ -47,6 +51,7 @@ const onSubmit = async () => {
     console.log(data)
     formAction.value.formSuccessMessage = 'Successfully Registered'
     refVForm.value?.reset()
+    router.replace('/dashboard')
   }
   formAction.value.formProcess = false // Reset form processing
 }

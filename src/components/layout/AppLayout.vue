@@ -1,5 +1,25 @@
 <script setup>
-import { ref } from 'vue'
+import { isAuthenticated } from '@/utils/supabase'
+import ProfileHeaderNavigation from './ProfileHeaderNavigation.vue'
+import { onMounted, ref } from 'vue'
+import { useDisplay } from 'vuetify'
+
+const props = defineProps(['isWithAppBarNavIcon'])
+
+const emit = defineEmits(['isDrawerVisible'])
+
+// Load Variables
+const isLoggedIn = ref(false)
+
+// Get Authentication status from supabase
+const getLoggedStatus = async () => {
+  isLoggedIn.value = await isAuthenticated()
+}
+
+// Load Functions during component rendering
+onMounted(() => {
+  getLoggedStatus()
+})
 
 const theme = ref('light')
 const visible = ref(false) // Define `visible` here
@@ -8,6 +28,10 @@ const visible = ref(false) // Define `visible` here
 <template>
   <v-responsive class="border rounded">
     <v-app :theme="theme">
+      <v-app-bar class="px-3" color="white" border app>
+        <ProfileHeaderNavigation v-if="isLoggedIn"></ProfileHeaderNavigation>
+      </v-app-bar>
+      <slot name="navigation"></slot>
       <v-main>
         <v-container
           class="d-flex align-center justify-center"
