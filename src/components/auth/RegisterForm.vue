@@ -29,9 +29,13 @@ const formDataDefault = {
 const formData = ref({ ...formDataDefault })
 const formAction = ref({ ...formActionDefault })
 
-// Submit logic
+// Register functionality
 const onSubmit = async () => {
-  formAction.value.formProcess = true // Indicate the form is processing
+  //Reset form action utils
+  formAction.value = { ...formActionDefault }
+  // Turn on proccessing
+  formAction.value.formProcess = true
+
   const { data, error } = await supabase.auth.signUp({
     email: formData.value.email,
     password: formData.value.password,
@@ -44,16 +48,19 @@ const onSubmit = async () => {
   })
 
   if (error) {
-    console.log(error)
+    //Add Error Message
     formAction.value.formErrorMessage = error.message
     formAction.value.formStatus = error.status
   } else if (data) {
-    console.log(data)
+    //Add Succeess Message
     formAction.value.formSuccessMessage = 'Successfully Registered'
-    refVForm.value?.reset()
-    router.replace('/dashboard')
+    //Redirect to Dashboard
+    router.replace('/system/dashboard')
   }
-  formAction.value.formProcess = false // Reset form processing
+  //Reset form
+  refVForm.value?.reset()
+  // Turn off processing
+  formAction.value.formProcess = false
 }
 
 // Form submission handler
