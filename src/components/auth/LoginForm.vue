@@ -1,8 +1,13 @@
 <script setup>
+import AlertNotification from '../common/AlertNotification.vue'
+import { supabase } from '@/utils/supabase'
 import { requiredValidator, emailValidator } from '@/utils/validators'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 const theme = ref('light')
-const visible = ref(false) // Define `visible` here
+const visible = ref(false)
 const refVForm = ref()
 
 const formDataDefault = {
@@ -14,8 +19,35 @@ const formData = ref({
   ...formDataDefault,
 })
 
-const onSubmit = () => {
-  alert(formData.value.email)
+const formActionDefault = {
+  formProcess: false,
+  formErrorMessage: '',
+  formSuccessMessage: '',
+  formStatus: null,
+}
+
+const formAction = ref({ ...formActionDefault })
+
+// Make onSubmit async to use await
+const onSubmit = async () => {
+  formAction.value = { ...formActionDefault }
+  formAction.value.formProcess = true
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: formData.value.email,
+    password: formData.value.password,
+  })
+
+  if (error) {
+    formAction.value.formErrorMessage = error.message
+    formAction.value.formStatus = error.status
+  } else if (data) {
+    formAction.value.formSuccessMessage = 'Successfully Logged'
+    router.replace('/system/dashboard')
+  }
+
+  refVForm.value?.reset()
+  formAction.value.formProcess = false
 }
 
 const onFormSubmit = () => {
@@ -26,7 +58,13 @@ const onFormSubmit = () => {
 </script>
 
 <template>
-  <v-form ref="refVform" @submit.prevent="onFormSubmit">
+  <AlertNotification
+    :form-success-message="formAction.formSuccessMessage"
+    :form-error-message="formAction.formErrorMessage"
+  >
+  </AlertNotification>
+
+  <v-form ref="refVForm" @submit.prevent="onFormSubmit">
     <div class="text-subtitle-1 font-weight-bold">Email</div>
 
     <v-text-field
@@ -52,8 +90,7 @@ const onFormSubmit = () => {
       variant="outlined"
       @click:append-inner="visible = !visible"
       :rules="[requiredValidator]"
-    >
-    </v-text-field>
+    ></v-text-field>
 
     <v-btn type="submit" class="mb-8" color="blue" size="large" block> Log In </v-btn>
   </v-form>
