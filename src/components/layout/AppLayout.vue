@@ -33,12 +33,7 @@ const visible = ref(false) // Define `visible` here
       </v-app-bar>
       <slot name="navigation"></slot>
       <v-main>
-        <v-container
-          class="d-flex align-center justify-center"
-          style="height: 100vh; min-height: 100vh"
-        >
-          <slot name="content"> </slot>
-        </v-container>
+        <slot name="content"> </slot>
       </v-main>
       <v-footer class="text-center" color="white" border app>
         <div class="d-flex justify-center align-center w-100">Copyright | AcaTrail Website</div>
@@ -53,7 +48,6 @@ main {
   background-size: cover;
   background-attachment: fixed;
   background-position: center;
-  height: 100vh;
 }
 
 /* Bounce animation */

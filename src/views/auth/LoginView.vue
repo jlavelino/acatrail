@@ -11,39 +11,41 @@ const visible = ref(false) // Define `visible` here
 <template>
   <AppLayout>
     <template #content>
-      <v-row class="d-flex align-center justify-center" style="width: 100%">
-        <v-col cols="12" md="6" class="mx-auto pb-16">
-          <!-- Add the bounce-animation class -->
-          <v-img class="bounce-animation" src="ew.png" alt="Image" height="300" />
-          <h3 class="text-center">
-            It is your academic buddy. It will help you to organize tasks, assignments, and
-            projects, keeping them on track and focused throughout your academic journey.
-          </h3>
-        </v-col>
+      <v-container fluid>
+        <v-row class="d-flex align-center justify-center" style="width: 100%">
+          <v-col cols="12" md="6" class="mx-auto">
+            <!-- Add the bounce-animation class -->
+            <v-img class="bounce-animation" src="ew.png" alt="Image" height="300" />
+            <h3 class="text-center">
+              It is your academic buddy. It will help you to organize tasks, assignments, and
+              projects, keeping them on track and focused throughout your academic journey.
+            </h3>
+          </v-col>
 
-        <v-col cols="12" md="6" class="mx-auto pt-10">
-          <div>
-            <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
-              <h1 class="text-center">Login</h1>
-              <v-divider></v-divider>
-              <LoginForm> </LoginForm>
-              <v-divider></v-divider>
-              <h5 class="text-center my-3">
-                Don't have an account? Click here to
-                <RouterLink to="/register">
-                  <a
-                    class="text-blue text-decoration-none"
-                    href="#"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    Register <v-icon icon="mdi-chevron-right"></v-icon> </a
-                ></RouterLink>
-              </h5>
-            </v-card>
-          </div>
-        </v-col>
-      </v-row>
+          <v-col cols="12" md="6" class="mx-auto pt-10">
+            <div>
+              <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
+                <h1 class="text-center">Login</h1>
+                <v-divider></v-divider>
+                <LoginForm> </LoginForm>
+                <v-divider></v-divider>
+                <h5 class="text-center my-3">
+                  Don't have an account? Click here to
+                  <RouterLink to="/register">
+                    <a
+                      class="text-blue text-decoration-none"
+                      href="#"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Register <v-icon icon="mdi-chevron-right"></v-icon> </a
+                  ></RouterLink>
+                </h5>
+              </v-card>
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
     </template>
   </AppLayout>
 </template>
@@ -54,7 +56,6 @@ main {
   background-size: cover;
   background-attachment: fixed;
   background-position: center;
-  height: 100vh;
 }
 
 /* Bounce animation */

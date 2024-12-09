@@ -65,7 +65,7 @@ const onFormSubmit = () => {
   </AlertNotification>
 
   <v-form ref="refVForm" @submit.prevent="onFormSubmit">
-    <div class="text-subtitle-1 font-weight-bold">Email</div>
+    <div class="pt-2 text-subtitle-1 font-weight-bold">Email</div>
 
     <v-text-field
       v-model="formData.email"
@@ -92,6 +92,6 @@ const onFormSubmit = () => {
       :rules="[requiredValidator]"
     ></v-text-field>
 
-    <v-btn type="submit" class="mb-8" color="blue" size="large" block> Log In </v-btn>
+    <v-btn type="submit" class="mb-4" color="blue" size="large" block> Log In </v-btn>
   </v-form>
 </template>
