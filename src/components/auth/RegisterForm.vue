@@ -86,7 +86,7 @@ const visible = ref(false) // Default visibility for passwords
 
   <!-- Registration Form -->
   <v-form ref="refVForm" @submit.prevent="onFormSubmit">
-    <v-row class="pt-3">
+    <v-row class="pt-4">
       <!-- First Name Field -->
       <v-col cols="6">
         <v-text-field
@@ -124,43 +124,49 @@ const visible = ref(false) // Default visibility for passwords
       :rules="[requiredValidator, emailValidator]"
     ></v-text-field>
 
-    <!-- Password Field -->
-    <div class="text-subtitle-1 font-weight-bold">Password</div>
-    <v-text-field
-      v-model="formData.password"
-      :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-      :type="visible ? 'text' : 'password'"
-      class="font-weight-bold"
-      density="compact"
-      placeholder="Enter your password"
-      prepend-inner-icon="mdi-lock-outline"
-      variant="outlined"
-      @click:append-inner="visible = !visible"
-      :rules="[requiredValidator, passwordValidator]"
-    ></v-text-field>
+    <v-row>
+      <v-col cols="6">
+        <!-- Password Field -->
+        <div class="text-subtitle-1 font-weight-bold">Password</div>
+        <v-text-field
+          v-model="formData.password"
+          :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+          :type="visible ? 'text' : 'password'"
+          class="font-weight-bold"
+          density="compact"
+          placeholder="Enter your password"
+          prepend-inner-icon="mdi-lock-outline"
+          variant="outlined"
+          @click:append-inner="visible = !visible"
+          :rules="[requiredValidator, passwordValidator]"
+        ></v-text-field>
+      </v-col>
 
-    <!-- Confirm Password Field -->
-    <div class="text-subtitle-1 font-weight-bold">Confirm Password</div>
-    <v-text-field
-      v-model="formData.confirmed_password"
-      :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-      :type="visible ? 'text' : 'password'"
-      class="font-weight-bold"
-      density="compact"
-      placeholder="Confirm your password"
-      prepend-inner-icon="mdi-lock-outline"
-      variant="outlined"
-      @click:append-inner="visible = !visible"
-      :rules="[
-        requiredValidator,
-        confirmedValidator(formData.confirmed_password, formData.password),
-      ]"
-    ></v-text-field>
+      <v-col cols="6">
+        <!-- Confirm Password Field -->
+        <div class="text-subtitle-1 font-weight-bold">Confirm Password</div>
+        <v-text-field
+          v-model="formData.confirmed_password"
+          :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+          :type="visible ? 'text' : 'password'"
+          class="font-weight-bold"
+          density="compact"
+          placeholder="Confirm your password"
+          prepend-inner-icon="mdi-lock-outline"
+          variant="outlined"
+          @click:append-inner="visible = !visible"
+          :rules="[
+            requiredValidator,
+            confirmedValidator(formData.confirmed_password, formData.password),
+          ]"
+        ></v-text-field>
+      </v-col>
+    </v-row>
 
     <!-- Submit Button -->
     <v-btn
       type="submit"
-      class="mb-8"
+      class="mb-4"
       color="blue"
       size="large"
       block
