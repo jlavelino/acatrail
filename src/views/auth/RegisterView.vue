@@ -2,8 +2,6 @@
 import { ref } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import RegisterForm from '@/components/auth/RegisterForm.vue'
-//import AppLayout from '@/components/layout/AppLayout.vue'
-//import RegisterForm from '@/components/layout/auth/RegisterForm.vue'
 
 const theme = ref('light')
 const visible = ref(false) // Define `visible` here
@@ -14,21 +12,13 @@ const visible = ref(false) // Define `visible` here
     <template #content>
       <v-container fluid>
         <v-row class="d-flex align-center justify-center" style="width: 100%">
-          <v-col cols="12" md="6" class="mx-auto">
-            <!-- Add the bounce-animation class -->
-            <v-img class="bounce-animation" src="ew.png" alt="Image" height="300" />
-            <h3 class="text-center">
-              It is your academic buddy. It will help you to organize tasks, assignments, and
-              projects, keeping them on track and focused throughout your academic journey.
-            </h3>
-          </v-col>
-
+          <!-- Register card comes first now -->
           <v-col cols="12" md="6" class="mx-auto pt-10">
             <div>
               <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
                 <h1 class="text-center">Register</h1>
                 <v-divider></v-divider>
-                <RegisterForm> </RegisterForm>
+                <RegisterForm></RegisterForm>
                 <v-divider></v-divider>
                 <h5 class="text-center my-3">
                   Already have an account? Click here to
@@ -39,11 +29,22 @@ const visible = ref(false) // Define `visible` here
                       rel="noopener noreferrer"
                       target="_blank"
                     >
-                      Login <v-icon icon="mdi-chevron-right"></v-icon> </a
-                  ></RouterLink>
+                      Login <v-icon icon="mdi-chevron-right"></v-icon>
+                    </a>
+                  </RouterLink>
                 </h5>
               </v-card>
             </div>
+          </v-col>
+
+          <!-- Description section comes second -->
+          <v-col cols="12" md="6" class="mx-auto">
+            <!-- Add the bounce-animation class -->
+            <v-img class="bounce-animation" src="ew.png" alt="Image" height="300" />
+            <h3 class="text-center">
+              It is your academic buddy. It will help you to organize tasks, assignments, and
+              projects, keeping them on track and focused throughout your academic journey.
+            </h3>
           </v-col>
         </v-row>
       </v-container>
