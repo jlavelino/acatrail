@@ -29,6 +29,15 @@ const visible = ref(false) // Define `visible` here
   <v-responsive class="border rounded">
     <v-app :theme="theme">
       <v-app-bar class="px-3" color="white" border app>
+        <v-app-bar-nav-icon
+          v-if="props.isWithAppBarNavIcon"
+          icon="mdi-menu"
+          :theme="theme"
+          @click="emit('isDrawerVisible')"
+        >
+        </v-app-bar-nav-icon>
+        <!-- Add a spacer to push the ProfileHeaderNavigation to the right -->
+        <v-spacer></v-spacer>
         <ProfileHeaderNavigation v-if="isLoggedIn"></ProfileHeaderNavigation>
       </v-app-bar>
       <slot name="navigation"></slot>
