@@ -4,6 +4,7 @@ import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 
 import { ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import SubjectList from './SubjectList.vue'
 const isDrawerVisible = ref(true)
 </script>
 
@@ -22,32 +23,7 @@ const isDrawerVisible = ref(true)
             <v-col cols="12" class="pa-5 pt-10">
               <v-card title="Here are the lists of available SUBJECTS:" variant="tonal"></v-card>
             </v-col>
-
-            <v-col cols="12" sm="8" class="px-8">
-              <v-text-field
-                variant="outlined"
-                label="Label"
-                density="compact"
-                append-inner-icon=" mdi-magnify"
-                clearable
-              >
-              </v-text-field>
-            </v-col>
-
-            <v-col cols="12" class="pa-5">
-              <v-card
-                title="Card title"
-                subtitle="Subtitle"
-                text="..."
-                variant="tonal"
-                height="200"
-                width="250"
-              >
-                <v-card-actions>
-                  <v-btn>Click me</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-col>
+            <SubjectList></SubjectList>
           </v-row>
         </v-card>
       </v-container>
