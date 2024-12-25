@@ -1,29 +1,23 @@
 <script setup>
-import { mainNav, menuItemsNav1 } from './SideNavigation'
+import { mainNav } from './SideNavigation'
 import { useDisplay } from 'vuetify'
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps(['isDrawerVisible'])
+
+// Utilize pre-defined Vue functions
 const { mobile } = useDisplay()
 
-const noAccessPages = ref([])
-const editableMenuItemsNav1 = ref([...menuItemsNav1])
+// Load Variables
 const isDrawerVisible = ref(props.isDrawerVisible)
 
+// Watch props if they change
 watch(
   () => props.isDrawerVisible,
   () => {
     isDrawerVisible.value = props.isDrawerVisible
   },
 )
-
-const onFilterPages = async () => {
-  // Filter logic if needed
-}
-
-onMounted(() => {
-  onFilterPages()
-})
 </script>
 
 <template>
@@ -35,6 +29,7 @@ onMounted(() => {
     width="325"
   >
     <v-list density="compact" nav>
+      <!-- Dashboard -->
       <v-list-item
         prepend-icon="mdi-view-dashboard"
         title="Dashboard"
@@ -43,23 +38,30 @@ onMounted(() => {
 
       <v-divider></v-divider>
 
-      <v-list-group :key="i" v-for="([title, icon], i) in mainNav">
+      <!-- Your Tasks Dropdown -->
+      <v-list-group>
         <template #activator="{ props }">
-          <v-list-item v-bind="props" :prepend-icon="icon" :title="title"></v-list-item>
+          <v-list-item v-bind="props" prepend-icon="mdi-notebook-multiple" title="Your Tasks" />
         </template>
-
-        <template v-if="title === mainNav[0][0]">
-          <v-list-item
-            v-for="([title, icon, subtitle, to], i) in editableMenuItemsNav1"
-            :key="i"
-            :prepend-icon="icon"
-            :title="title"
-            :subtitle="subtitle ?? undefined"
-            :to="to ?? undefined"
-          ></v-list-item>
-        </template>
+        <v-list-item
+          v-for="([title, icon, subtitle, to], i) in [
+            ['Assignments', 'mdi-pencil-box-outline', null, '/assignments'],
+            ['Projects', 'mdi-book-multiple', null, '/projects'],
+          ]"
+          :key="i"
+          :prepend-icon="icon"
+          :title="title"
+          :subtitle="subtitle ?? undefined"
+          :to="to ?? undefined"
+        ></v-list-item>
       </v-list-group>
-
+      <v-divider></v-divider>
+      <!-- List of Subjects -->
+      <v-list-item
+        prepend-icon="mdi-bookshelf"
+        title="List of Subjects"
+        to="/subjects"
+      ></v-list-item>
       <v-divider></v-divider>
     </v-list>
   </v-navigation-drawer>

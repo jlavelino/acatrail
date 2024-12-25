@@ -2,8 +2,9 @@ import { isAuthenticated } from '@/utils/supabase'
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
-import DashBoardView from '@/views/auth/system/DashBoardView.vue'
+import DashBoardView from '@/views/system/DashBoardView.vue'
 import NotFoundView from '@/views/errors/NotFoundView.vue'
+import SubjectView from '@/views/system/subject/SubjectView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,6 +23,11 @@ const router = createRouter({
       path: '/system/dashboard',
       name: 'dashboard',
       component: DashBoardView,
+    },
+    {
+      path: '/subjects',
+      name: 'subjects',
+      component: SubjectView,
     },
     {
       path: '/:catchAll(.*)',
