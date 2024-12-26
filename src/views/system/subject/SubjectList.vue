@@ -1,11 +1,21 @@
 <script setup>
-import { onMounted } from 'vue'
+import SubjectFormDialog from './SubjectFormDialog.vue'
+import { onMounted, ref } from 'vue'
 import { useSubjectsStore } from '@/stores/subjects'
 
+// Use pinia store
 const subjectsStore = useSubjectsStore()
 
+// Load variables
+const isDialogVisible = ref(false)
+
+// Add item
+const onAdd = () => {
+  isDialogVisible.value = true
+}
+
 onMounted(async () => {
-  if (subjectsStore.subjects.length == 0) await subjectsStore.getSubjectsFromApi()
+  if (subjectsStore.subjects.length == 0) await subjectsStore.getSubjects()
 })
 </script>
 <template>
@@ -21,7 +31,7 @@ onMounted(async () => {
   </v-col>
 
   <v-col cols="12" sm="3" class="pr-8">
-    <v-btn variant="tonal" block> Add Subjects</v-btn>
+    <v-btn variant="tonal" @click="onAdd" block> Add Subjects</v-btn>
   </v-col>
   <v-col
     cols="12"
@@ -43,5 +53,6 @@ onMounted(async () => {
       </v-card-actions>
     </v-card>
   </v-col>
+  <SubjectFormDialog v-model:is-dialog-visible="isDialogVisible"></SubjectFormDialog>
 </template>
 <style scoped></style>
