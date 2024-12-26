@@ -9,7 +9,7 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <v-col cols="12" sm="12" class="px-8">
+  <v-col cols="12" sm="9" class="px-8">
     <v-text-field
       variant="outlined"
       label="Label"
@@ -20,6 +20,9 @@ onMounted(async () => {
     </v-text-field>
   </v-col>
 
+  <v-col cols="12" sm="3" class="pr-8">
+    <v-btn variant="tonal" block> Add Subjects</v-btn>
+  </v-col>
   <v-col
     cols="12"
     sm="4"
