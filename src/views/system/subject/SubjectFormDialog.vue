@@ -1,8 +1,8 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import { requiredValidator, imageValidator } from '@/utils/validators'
+import { requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
-import { useAuthUserStore } from '@/stores/authUser'
+import { useSubjectsStore } from '@/stores/subjects' // Use the subjects store
 import { useDisplay } from 'vuetify'
 import { ref } from 'vue'
 
@@ -10,11 +10,11 @@ const props = defineProps(['isDialogVisible', 'itemData', 'tableFilters'])
 
 const emit = defineEmits(['update:isDialogVisible'])
 
-// Utilize pre-defined vue functions
+// Utilize pre-defined Vue functions
 const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
-const authStore = useAuthUserStore()
+const subjectsStore = useSubjectsStore() // Corrected store reference
 
 // Load Variables
 const formDataDefault = {
@@ -31,10 +31,46 @@ const formAction = ref({
 const refVForm = ref()
 const isUpdate = ref(false)
 
+const onSubmit = async () => {
+  // Reset Form Action utils
+  formAction.value = { ...formActionDefault, formProcess: true }
+
+  try {
+    // Check if isUpdate is true, then do update; if false, add a new subject
+    const { data, error } = await subjectsStore.addSubject(formData.value)
+
+    if (error) {
+      // Add Error Message and Status Code
+      formAction.value.formErrorMessage = error.message
+      formAction.value.formStatus = error.status
+
+      // Turn off processing
+      formAction.value.formProcess = false
+    } else if (data) {
+      // Add Success Message
+      formAction.value.formSuccessMessage = isUpdate.value
+        ? 'Successfully Updated Product Information.'
+        : 'Successfully Added Product.'
+
+      // Refresh subjects with filters
+      await subjectsStore.getSubjects(props.tableFilters)
+
+      // Reset Form and Close Dialog
+      setTimeout(() => {
+        onFormReset()
+      }, 2500)
+    }
+  } catch (err) {
+    formAction.value.formErrorMessage = err.message || 'An error occurred.'
+  } finally {
+    formAction.value.formProcess = false
+  }
+}
+
 // Trigger Validators
 const onFormSubmit = () => {
   refVForm.value?.validate().then(({ valid }) => {
-    // if (valid) onSubmit()
+    if (valid) onSubmit()
   })
 }
 
@@ -95,7 +131,7 @@ const onFormReset = () => {
         <v-card-actions class="pa-4">
           <v-spacer></v-spacer>
 
-          <v-btn text="Close" variant="plain" prepend-icon="mdi-close" @click="onFormReset"></v-btn>
+          <v-btn text variant="plain" prepend-icon="mdi-close" @click="onFormReset"> Close </v-btn>
 
           <v-btn
             prepend-icon="mdi-pencil"

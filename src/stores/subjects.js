@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { supabase } from '@/utils/supabase'
 
 export const useSubjectsStore = defineStore('subjects', () => {
   //States
@@ -34,5 +35,9 @@ export const useSubjectsStore = defineStore('subjects', () => {
     subjects.value = data
   }
 
-  return { subjects, getSubjectsFromApi, getSubjects, subjectsFromApi }
+  async function addSubject(formData) {
+    return await supabase.from('subjects').insert([formData]).select()
+  }
+
+  return { subjects, getSubjectsFromApi, getSubjects, subjectsFromApi, addSubject }
 })
