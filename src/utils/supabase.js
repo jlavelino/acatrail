@@ -23,3 +23,8 @@ export const isAuthenticated = async () => {
   }
   return !!data.session
 }
+
+// handle search if null turn to empty  string
+export const tableSearch = (search) => {
+  return (search ||= '')
+}

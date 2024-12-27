@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { supabase } from '@/utils/supabase'
+import { supabase, tableSearch } from '@/utils/supabase'
 
 export const useSubjectsStore = defineStore('subjects', () => {
   // States
@@ -24,15 +24,20 @@ export const useSubjectsStore = defineStore('subjects', () => {
     })
 
     const { data } = await supabase.from('subjects').insert(transformedData).select()
-    if (data) await getSubjects()
+
+    //Trigger get items actions
+    if (data) await getSubjects({ search: '' })
   }
 
   // Retrieve from Supabase
-  async function getSubjects() {
-    const { data } = await supabase.from('subjects').select('*')
+  async function getSubjects(tableFilters) {
+    const search = tableSearch(tableFilters.search) // Use tableFilters.search
+    const { data } = await supabase
+      .from('subjects')
+      .select('*')
+      .ilike('name', '%' + search + '%')
     subjects.value = data
   }
-
   // Add a new subject
   async function addSubject(formData) {
     return await supabase.from('subjects').insert([formData]).select()
