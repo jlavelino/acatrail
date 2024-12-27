@@ -9,6 +9,10 @@ import { formActionDefault } from '@/utils/supabase'
 const subjectsStore = useSubjectsStore()
 
 // Load variables
+const tableFilters = ref({
+  search: '',
+})
+const itemData = ref(null)
 const isDialogVisible = ref(false)
 const deleteId = ref(null)
 const formAction = ref({
@@ -19,6 +23,16 @@ const isConfirmDeleteDialog = ref(false)
 // Add Subject
 const onAdd = () => {
   isDialogVisible.value = true
+}
+
+// Retrieve Data based on Search
+const onSearchSubjects = async () => {
+  if (
+    tableFilters.value.search?.length >= 3 ||
+    tableFilters.value.search?.length == 0 ||
+    tableFilters.value.search === null
+  )
+    await subjectsStore.getSubjects(tableFilters.value)
 }
 
 // Trigger Delete Dialog
@@ -47,18 +61,21 @@ const onConfirmDelete = async () => {
 }
 
 onMounted(async () => {
-  if (subjectsStore.subjects.length === 0) await subjectsStore.getSubjects()
+  if (subjectsStore.subjects.length === 0) await subjectsStore.getSubjects(tableFilters.value)
 })
 </script>
 
 <template>
   <v-col cols="12" sm="9" class="px-8">
     <v-text-field
+      v-model="tableFilters.search"
       variant="outlined"
-      label="Label"
+      label="Search Subject"
       density="compact"
       append-inner-icon="mdi-magnify"
       clearable
+      @click:clear="onSearchSubjects"
+      @input="onSearchSubjects"
     ></v-text-field>
   </v-col>
 
@@ -95,7 +112,11 @@ onMounted(async () => {
     </v-card>
   </v-col>
 
-  <SubjectFormDialog v-model:is-dialog-visible="isDialogVisible"></SubjectFormDialog>
+  <SubjectFormDialog
+    v-model:is-dialog-visible="isDialogVisible"
+    :item-data="itemData"
+    :table-filters="tableFilters"
+  ></SubjectFormDialog>
 
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDeleteDialog"
