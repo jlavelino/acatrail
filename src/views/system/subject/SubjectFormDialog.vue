@@ -105,7 +105,7 @@ const onFormReset = () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12">
+            <v-col cols="12" sm="2">
               <v-text-field
                 v-model="formData.units"
                 label="Units"
@@ -134,14 +134,14 @@ const onFormReset = () => {
           <v-btn text variant="plain" prepend-icon="mdi-close" @click="onFormReset"> Close </v-btn>
 
           <v-btn
-            prepend-icon="mdi-pencil"
+            prepend-icon=" mdi-plus-box"
             color="red-darken-4"
             type="submit"
             variant="elevated"
             :disabled="formAction.formProcess"
             :loading="formAction.formProcess"
           >
-            {{ isUpdate ? 'Update Product' : 'Add Product' }}
+            {{ isUpdate ? 'Update Product' : 'Add Subject' }}
           </v-btn>
         </v-card-actions>
       </v-form>
