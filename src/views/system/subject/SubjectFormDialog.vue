@@ -49,8 +49,8 @@ const onSubmit = async () => {
     } else if (data) {
       // Add Success Message
       formAction.value.formSuccessMessage = isUpdate.value
-        ? 'Successfully Updated Product Information.'
-        : 'Successfully Added Product.'
+        ? 'Successfully Updated Subject Information.'
+        : 'Successfully Added Subject.'
 
       // Refresh subjects with filters
       await subjectsStore.getSubjects(props.tableFilters)
