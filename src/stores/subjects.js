@@ -4,24 +4,22 @@ import { ref } from 'vue'
 import { supabase } from '@/utils/supabase'
 
 export const useSubjectsStore = defineStore('subjects', () => {
-  //States
+  // States
   const subjectsFromApi = ref([])
   const subjects = ref([])
 
-  //Getters
-  //const sample = computed(() => count.value * 2)
+  // Actions
 
-  //Actions
-  // Retrieve from api and insert more to subjects table in supabase
+  // Retrieve from API and insert more to subjects table in Supabase
   async function getSubjectsFromApi() {
     const response = await axios.get('https://api.restful-api.dev/objects')
     subjects.value = response.data
 
-    const transformedData = subjectsFromApi.value.map((subjects) => {
+    const transformedData = subjectsFromApi.value.map((subject) => {
       return {
-        name: subjects.name,
-        units: subjects.units,
-        description: subjects.data?.description ?? '',
+        name: subject.name,
+        units: subject.units,
+        description: subject.data?.description ?? '',
       }
     })
 
@@ -29,15 +27,36 @@ export const useSubjectsStore = defineStore('subjects', () => {
     if (data) await getSubjects()
   }
 
-  // retrieve from supabase
+  // Retrieve from Supabase
   async function getSubjects() {
     const { data } = await supabase.from('subjects').select('*')
     subjects.value = data
   }
 
+  // Add a new subject
   async function addSubject(formData) {
     return await supabase.from('subjects').insert([formData]).select()
   }
 
-  return { subjects, getSubjectsFromApi, getSubjects, subjectsFromApi, addSubject }
+  // Delete a subject by ID
+  async function deleteSubject(id) {
+    const { error } = await supabase.from('subjects').delete().eq('id', id)
+    if (error) {
+      console.error('Error deleting subject:', error.message)
+      return { error }
+    }
+
+    // Update the local subjects array after deletion
+    subjects.value = subjects.value.filter((subject) => subject.id !== id)
+    return { success: true }
+  }
+
+  return {
+    subjects,
+    getSubjectsFromApi,
+    getSubjects,
+    subjectsFromApi,
+    addSubject,
+    deleteSubject, // Expose deleteSubject
+  }
 })
