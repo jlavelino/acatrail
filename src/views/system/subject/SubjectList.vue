@@ -18,13 +18,14 @@ onMounted(async () => {
   if (subjectsStore.subjects.length == 0) await subjectsStore.getSubjects()
 })
 </script>
+
 <template>
   <v-col cols="12" sm="9" class="px-8">
     <v-text-field
       variant="outlined"
       label="Label"
       density="compact"
-      append-inner-icon=" mdi-magnify"
+      append-inner-icon="mdi-magnify"
       clearable
     >
     </v-text-field>
@@ -33,6 +34,7 @@ onMounted(async () => {
   <v-col cols="12" sm="3" class="pr-8">
     <v-btn variant="tonal" @click="onAdd" block> Add Subjects</v-btn>
   </v-col>
+
   <v-col
     cols="12"
     sm="4"
@@ -40,19 +42,27 @@ onMounted(async () => {
     v-for="subjects in subjectsStore.subjects"
     :key="subjects.id"
   >
-    <v-card :title="subjects.name" variant="tonal" min-height="200" width="250">
+    <v-card variant="tonal" min-height="200" width="250">
       <v-card-text>
-        <ul class="ms-5">
-          <li v-for="(value, key) in subjects.data" :key="key">
-            <span class="font-weight-bold">{{ key }}:</span>{{ value }}
-          </li>
-        </ul>
+        <!-- Name -->
+        <div class="font-weight-bold text-h6 mb-2">{{ subjects.name }}</div>
+
+        <!-- Units -->
+        <div class="text-body-2 mb-1">
+          Units: <span class="font-weight-medium">{{ subjects.units }}</span>
+        </div>
+
+        <!-- Description -->
+        <div class="text-body-2">{{ subjects.description }}</div>
       </v-card-text>
+
       <v-card-actions>
         <v-btn>Click me</v-btn>
       </v-card-actions>
     </v-card>
   </v-col>
+
   <SubjectFormDialog v-model:is-dialog-visible="isDialogVisible"></SubjectFormDialog>
 </template>
+
 <style scoped></style>
