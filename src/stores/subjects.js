@@ -9,8 +9,13 @@ export const useSubjectsStore = defineStore('subjects', () => {
   const subjectsFromApi = ref([])
   const subjects = ref([])
 
-  // Actions
+  // Reset States
+  function $reset() {
+    subjectsFromApi.value = []
+    subjects.value = []
+  }
 
+  // Actions
   // Retrieve from API and insert more to subjects table in Supabase
   async function getSubjectsFromApi() {
     const response = await axios.get('https://api.restful-api.dev/objects')
@@ -98,6 +103,7 @@ export const useSubjectsStore = defineStore('subjects', () => {
   }
 
   return {
+    $reset,
     subjects,
     getSubjectsFromApi,
     getSubjects,
