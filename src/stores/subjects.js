@@ -2,6 +2,7 @@ import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { supabase, tableSearch } from '@/utils/supabase'
+import { getSlugText } from '@/utils/helpers'
 
 export const useSubjectsStore = defineStore('subjects', () => {
   // States
@@ -41,7 +42,30 @@ export const useSubjectsStore = defineStore('subjects', () => {
   }
   // Add a new subject
   async function addSubject(formData) {
+    if (formData.image) {
+      formData.image_url = await updateSubjectImage(formData.image, formData.name)
+      delete formData.image
+    }
+
     return await supabase.from('subjects').insert([formData]).select()
+  }
+
+  // Update Product Image
+  async function updateSubjectImage(file, filename) {
+    // Upload the file with the file name and file extension
+    const { data } = await supabase.storage
+      .from('acatrail')
+      .upload('subjects/' + getSlugText(filename) + '.png', file, {
+        cacheControl: '3600',
+        upsert: true,
+      })
+
+    // If no error set data to userData state with the image_url
+    if (data) {
+      // Retrieve Image Public Url
+      const { data: imageData } = supabase.storage.from('acatrail').getPublicUrl(data.path)
+      return imageData.publicUrl
+    }
   }
 
   // Delete a subject by ID

@@ -3,9 +3,10 @@ import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
 import { useSubjectsStore } from '@/stores/subjects' // Use the subjects store
+import { fileExtract } from '@/utils/helpers'
 import { useDisplay } from 'vuetify'
 import { ref } from 'vue'
-
+import { imageValidator } from '@/utils/validators'
 const props = defineProps(['isDialogVisible', 'itemData', 'tableFilters'])
 
 const emit = defineEmits(['update:isDialogVisible'])
@@ -14,13 +15,14 @@ const emit = defineEmits(['update:isDialogVisible'])
 const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
-const subjectsStore = useSubjectsStore() // Corrected store reference
+const subjectsStore = useSubjectsStore()
 
 // Load Variables
 const formDataDefault = {
   name: '',
   units: '0',
   description: '',
+  image: null,
 }
 const formData = ref({
   ...formDataDefault,
@@ -30,6 +32,21 @@ const formAction = ref({
 })
 const refVForm = ref()
 const isUpdate = ref(false)
+const imgPreview = ref('/images/img-product.png')
+
+// Function to handle file change and show image preview
+const onPreview = async (event) => {
+  const { fileObject, fileUrl } = await fileExtract(event)
+  // Update formData
+  formData.value.image = fileObject
+  // Update imgPreview state
+  imgPreview.value = fileUrl
+}
+
+// Function to reset preview if file-input clear is clicked
+const onPreviewReset = () => {
+  imgPreview.value = '/images/img-product.png'
+}
 
 const onSubmit = async () => {
   // Reset Form Action utils
@@ -123,6 +140,34 @@ const onFormReset = () => {
                 :rules="[requiredValidator]"
               ></v-textarea>
             </v-col>
+
+            <v-col cols="12" sm="6" md="4">
+              <v-img
+                width="55%"
+                class="mx-auto rounded-circle"
+                color="red-darken-4"
+                aspect-ratio="1"
+                :src="imgPreview"
+                alt="Subject Picture Preview"
+                cover
+              >
+              </v-img>
+            </v-col>
+
+            <v-col cols="12" sm="6" md="8">
+              <v-file-input
+                class="mt-5"
+                :rules="[imageValidator]"
+                accept="image/png, image/jpeg"
+                label="Browse Subject Picture"
+                placeholder="Browse Subject Picture"
+                prepend-icon="mdi-camera"
+                show-size
+                chips
+                @change="onPreview"
+                @click:clear="onPreviewReset"
+              ></v-file-input>
+            </v-col>
           </v-row>
         </v-card-text>
 
@@ -141,7 +186,7 @@ const onFormReset = () => {
             :disabled="formAction.formProcess"
             :loading="formAction.formProcess"
           >
-            {{ isUpdate ? 'Update Product' : 'Add Subject' }}
+            {{ isUpdate ? 'Update Subject' : 'Add Subject' }}
           </v-btn>
         </v-card-actions>
       </v-form>
