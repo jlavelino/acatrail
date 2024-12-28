@@ -92,6 +92,8 @@ onMounted(async () => {
   >
     <v-card variant="tonal" min-height="200" width="250">
       <v-card-text>
+        <!-- Image -->
+        <v-img v-if="subjects.image_url" :src="subjects.image_url" height="150" cover></v-img>
         <!-- Name -->
         <div class="font-weight-bold text-h6 mb-2">{{ subjects.name }}</div>
 
