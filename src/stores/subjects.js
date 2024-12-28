@@ -42,12 +42,28 @@ export const useSubjectsStore = defineStore('subjects', () => {
   }
   // Add a new subject
   async function addSubject(formData) {
+    // check if there is image uploaded in form
     if (formData.image) {
+      // upload image in supabase and get url
       formData.image_url = await updateSubjectImage(formData.image, formData.name)
       delete formData.image
     }
 
+    // insert form data in subject
     return await supabase.from('subjects').insert([formData]).select()
+  }
+
+  // Update Subjects
+  async function updateSubject(formData) {
+    // check if there is image uploaded in form
+    if (formData.image) {
+      // upload image in supabase and get url
+      formData.image_url = await updateSubjectImage(formData.image, formData.name)
+      delete formData.image
+    }
+
+    // update for data in subject
+    return await supabase.from('subjects').update(formData).eq('id', formData.id).select()
   }
 
   // Update Product Image
@@ -87,6 +103,7 @@ export const useSubjectsStore = defineStore('subjects', () => {
     getSubjects,
     subjectsFromApi,
     addSubject,
-    deleteSubject, // Expose deleteSubject
+    updateSubject,
+    deleteSubject,
   }
 })

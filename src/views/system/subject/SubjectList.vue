@@ -22,6 +22,7 @@ const isConfirmDeleteDialog = ref(false)
 
 // Add Subject
 const onAdd = () => {
+  itemData.value = null
   isDialogVisible.value = true
 }
 
@@ -33,6 +34,12 @@ const onSearchSubjects = async () => {
     tableFilters.value.search === null
   )
     await subjectsStore.getSubjects(tableFilters.value)
+}
+
+// Update Subject
+const onUpdate = (subject) => {
+  itemData.value = subject
+  isDialogVisible.value = true
 }
 
 // Trigger Delete Dialog
@@ -107,8 +114,24 @@ onMounted(async () => {
       </v-card-text>
 
       <v-card-actions style="display: flex; justify-content: flex-end">
-        <v-btn icon color="red" @click="onDelete(subjects.id)">
-          <v-icon size="28">mdi-delete</v-icon>
+        <v-btn
+          variant="elevated"
+          density="comfortable"
+          icon
+          color="black"
+          @click="onUpdate(subjects)"
+        >
+          <v-icon size="20"> mdi-pencil</v-icon>
+        </v-btn>
+
+        <v-btn
+          variant="elevated"
+          density="comfortable"
+          icon
+          color="red"
+          @click="onDelete(subjects.id)"
+        >
+          <v-icon size="20">mdi-delete</v-icon>
         </v-btn>
       </v-card-actions>
     </v-card>

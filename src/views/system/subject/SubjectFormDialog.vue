@@ -5,7 +5,7 @@ import { formActionDefault } from '@/utils/supabase.js'
 import { useSubjectsStore } from '@/stores/subjects' // Use the subjects store
 import { fileExtract } from '@/utils/helpers'
 import { useDisplay } from 'vuetify'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { imageValidator } from '@/utils/validators'
 const props = defineProps(['isDialogVisible', 'itemData', 'tableFilters'])
 
@@ -34,6 +34,16 @@ const refVForm = ref()
 const isUpdate = ref(false)
 const imgPreview = ref('/images/img-product.png')
 
+// Monitor itemData if it has data
+watch(
+  () => props.itemData,
+  () => {
+    isUpdate.value = props.itemData ? true : false
+    formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
+    imgPreview.value = formData.value.image_url ?? '/images/img-product.png'
+  },
+)
+
 // Function to handle file change and show image preview
 const onPreview = async (event) => {
   const { fileObject, fileUrl } = await fileExtract(event)
@@ -45,7 +55,7 @@ const onPreview = async (event) => {
 
 // Function to reset preview if file-input clear is clicked
 const onPreviewReset = () => {
-  imgPreview.value = '/images/img-product.png'
+  imgPreview.value = formData.value.image_url ?? '/images/img-product.png'
 }
 
 const onSubmit = async () => {
@@ -54,7 +64,9 @@ const onSubmit = async () => {
 
   try {
     // Check if isUpdate is true, then do update; if false, add a new subject
-    const { data, error } = await subjectsStore.addSubject(formData.value)
+    const { data, error } = isUpdate.value
+      ? await subjectsStore.updateSubject(formData.value)
+      : await subjectsStore.addSubject(formData.value)
 
     if (error) {
       // Add Error Message and Status Code
