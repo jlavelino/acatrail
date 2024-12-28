@@ -76,83 +76,94 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-col cols="12" sm="9" class="px-8">
-    <v-text-field
-      v-model="tableFilters.search"
-      variant="outlined"
-      label="Search Subject"
-      density="compact"
-      append-inner-icon="mdi-magnify"
-      clearable
-      @click:clear="onSearchSubjects"
-      @input="onSearchSubjects"
-    ></v-text-field>
-  </v-col>
+  <v-container fluid>
+    <!-- Search and Add Buttons -->
+    <v-row align="center" class="px-8">
+      <v-col cols="12" md="8">
+        <v-text-field
+          v-model="tableFilters.search"
+          variant="outlined"
+          label="Search Subject"
+          density="compact"
+          append-inner-icon="mdi-magnify"
+          clearable
+          @click:clear="onSearchSubjects"
+          @input="onSearchSubjects"
+        ></v-text-field>
+      </v-col>
+      <v-col cols="12" class="mb-6" md="4">
+        <v-btn variant="tonal" @click="onAdd" block>Add Subjects</v-btn>
+      </v-col>
+    </v-row>
 
-  <v-col cols="12" sm="3" class="pr-8">
-    <v-btn variant="tonal" @click="onAdd" block>Add Subjects</v-btn>
-  </v-col>
+    <!-- Subject Cards -->
+    <v-row dense>
+      <v-col
+        v-for="subject in subjectsStore.subjects"
+        :key="subject.id"
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+      >
+        <v-card class="ma-3 pa-4" min-height="250" min-width="250">
+          <!-- Image -->
+          <v-img v-if="subject.image_url" :src="subject.image_url" height="150" cover></v-img>
 
-  <v-col
-    cols="12"
-    sm="4"
-    class="pa-7"
-    v-for="subjects in subjectsStore.subjects"
-    :key="subjects.id"
-  >
-    <v-card variant="tonal" min-height="200" width="250">
-      <v-card-text>
-        <!-- Image -->
-        <v-img v-if="subjects.image_url" :src="subjects.image_url" height="150" cover></v-img>
+          <!-- Card Content -->
+          <v-card-text class="font-size">
+            <h3 class="font-weight-bold mb-2">{{ subject.name }}</h3>
+            <h4 class="mb-1">
+              Units: <span class="font-weight-medium">{{ subject.units }}</span>
+            </h4>
+            <h4 class="font-weight-medium">{{ subject.description }}</h4>
+          </v-card-text>
 
-        <!-- Name -->
-        <div class="font-weight-bold text-h6 mb-2">{{ subjects.name }}</div>
+          <!-- Actions -->
+          <v-card-actions style="display: flex; justify-content: flex-end">
+            <v-btn
+              icon
+              variant="elevated"
+              density="comfortable"
+              color="black"
+              @click="onUpdate(subject)"
+            >
+              <v-icon size="20">mdi-pencil</v-icon>
+            </v-btn>
+            <v-btn
+              icon
+              variant="elevated"
+              density="comfortable"
+              color="red"
+              @click="onDelete(subject.id)"
+            >
+              <v-icon size="20">mdi-delete</v-icon>
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
 
-        <!-- Units -->
-        <div class="text-body-2 mb-1">
-          Units: <span class="font-weight-medium">{{ subjects.units }}</span>
-        </div>
-
-        <!-- Description -->
-        <div class="text-body-2">{{ subjects.description }}</div>
-      </v-card-text>
-
-      <v-card-actions style="display: flex; justify-content: flex-end">
-        <v-btn
-          variant="elevated"
-          density="comfortable"
-          icon
-          color="black"
-          @click="onUpdate(subjects)"
-        >
-          <v-icon size="20">mdi-pencil</v-icon>
-        </v-btn>
-
-        <v-btn
-          variant="elevated"
-          density="comfortable"
-          icon
-          color="red"
-          @click="onDelete(subjects.id)"
-        >
-          <v-icon size="20">mdi-delete</v-icon>
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-col>
-
-  <SubjectFormDialog
-    v-model:is-dialog-visible="isDialogVisible"
-    :item-data="itemData"
-    :table-filters="tableFilters"
-  ></SubjectFormDialog>
-
-  <ConfirmDialog
-    v-model:is-dialog-visible="isConfirmDeleteDialog"
-    title="Confirm Delete"
-    text="Are you sure you want to delete this subject?"
-    @confirm="onConfirmDelete"
-  ></ConfirmDialog>
+    <!-- Dialogs -->
+    <SubjectFormDialog
+      v-model:is-dialog-visible="isDialogVisible"
+      :item-data="itemData"
+      :table-filters="tableFilters"
+    />
+    <ConfirmDialog
+      v-model:is-dialog-visible="isConfirmDeleteDialog"
+      title="Confirm Delete"
+      text="Are you sure you want to delete this subject?"
+      @confirm="onConfirmDelete"
+    />
+  </v-container>
 </template>
-
-<style scoped></style>
+<style scoped>
+.v-card {
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+.v-row {
+  row-gap: 10px;
+}
+</style>
