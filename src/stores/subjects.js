@@ -47,6 +47,7 @@ export const useSubjectsStore = defineStore('subjects', () => {
   }
   // Add a new subject
   async function addSubject(formData) {
+    const { image, ...data } = formData
     // check if there is image uploaded in form
     if (formData.image) {
       // upload image in supabase and get url
@@ -55,7 +56,7 @@ export const useSubjectsStore = defineStore('subjects', () => {
     }
 
     // insert form data in subject
-    return await supabase.from('subjects').insert([formData]).select()
+    return await supabase.from('subjects').insert([data]).select()
   }
 
   // Update Subjects

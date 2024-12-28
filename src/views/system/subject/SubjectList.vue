@@ -32,8 +32,9 @@ const onSearchSubjects = async () => {
     tableFilters.value.search?.length >= 3 ||
     tableFilters.value.search?.length == 0 ||
     tableFilters.value.search === null
-  )
+  ) {
     await subjectsStore.getSubjects(tableFilters.value)
+  }
 }
 
 // Update Subject
@@ -63,12 +64,14 @@ const onConfirmDelete = async () => {
 
   formAction.value.formSuccessMessage = 'Successfully Deleted Subject.'
 
-  // Refresh the subjects list
-  await subjectsStore.getSubjects()
+  // Refresh the subjects list with tableFilters
+  await subjectsStore.getSubjects(tableFilters.value)
 }
 
 onMounted(async () => {
-  if (subjectsStore.subjects.length === 0) await subjectsStore.getSubjects(tableFilters.value)
+  if (subjectsStore.subjects.length === 0) {
+    await subjectsStore.getSubjects(tableFilters.value)
+  }
 })
 </script>
 
@@ -101,6 +104,7 @@ onMounted(async () => {
       <v-card-text>
         <!-- Image -->
         <v-img v-if="subjects.image_url" :src="subjects.image_url" height="150" cover></v-img>
+
         <!-- Name -->
         <div class="font-weight-bold text-h6 mb-2">{{ subjects.name }}</div>
 
@@ -121,7 +125,7 @@ onMounted(async () => {
           color="black"
           @click="onUpdate(subjects)"
         >
-          <v-icon size="20"> mdi-pencil</v-icon>
+          <v-icon size="20">mdi-pencil</v-icon>
         </v-btn>
 
         <v-btn
