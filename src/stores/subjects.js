@@ -35,6 +35,7 @@ export const useSubjectsStore = defineStore('subjects', () => {
     const { data } = await supabase
       .from('subjects')
       .select('*')
+      .order('name', { ascending: true })
       .ilike('name', '%' + search + '%')
     subjects.value = data
   }
