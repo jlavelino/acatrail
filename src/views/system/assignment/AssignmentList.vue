@@ -1,9 +1,19 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { useAssignmentsStore } from '@/stores/assignments'
 
+const assignmentsStore = useAssignmentsStore()
+
+onMounted(async () => {
+  if (assignmentsStore.assignments.length == 0) await assignmentsStore.getAssignmentsFromApi()
+})
 // for the tabs part
 const tab = ref('one')
+
+// for the modal visibility
+const showModal = ref(false)
 </script>
+
 <template>
   <v-card>
     <v-tabs v-model="tab" class="auth-background tabs-head">
@@ -14,27 +24,53 @@ const tab = ref('one')
       <v-tabs-window v-model="tab">
         <v-tabs-window-item value="one">
           <v-card class="mx-auto" max-width="100%" hover>
-            <v-card-item>
-              <v-card-title style="font-family: 'Poppins'; color: #00838f">
-                <b>To Do Assignment </b>
-                <v-icon
-                  class="mdi mdi-alert-octagon"
-                  style="font-size: 25px"
-                  color="red-darken-3"
-                ></v-icon>
-              </v-card-title>
-              <v-card-subtitle>Plan, Prioritize, and Complete your Assignment</v-card-subtitle>
-            </v-card-item>
+            <v-row>
+              <v-col>
+                <v-card-item>
+                  <v-card-title style="font-family: 'Poppins'; color: #095bea">
+                    <b>To Do Assignment </b>
+                    <v-icon
+                      class="mdi mdi-alert-octagon"
+                      style="font-size: 25px"
+                      color="red-darken-3"
+                    ></v-icon>
+                  </v-card-title>
+                  <v-card-subtitle>
+                    Plan, Prioritize, and Complete your Assignment
+                  </v-card-subtitle>
+                </v-card-item></v-col
+              >
+              <v-col class="pt-10"
+                ><button class="create-new-btn rounded-pill" @click="showModal = true">
+                  <i class="mdi mdi-plus"></i> Create Assignment
+                </button></v-col
+              >
+            </v-row>
 
             <v-card-text>
               <v-row>
-                <v-col cols="12" class="pa-4">
+                <v-col
+                  cols="12"
+                  class="pa-4"
+                  v-for="assignment in assignmentsStore.assignments"
+                  :key="assignment.id"
+                >
                   <h3 class="text-h6 mb-4"><strong>Tasks</strong></h3>
+
                   <v-card class="mb-5 custom-border" elevation="0" outlined>
                     <v-card-text class="d-flex justify-space-between align-center">
                       <div>
-                        <div><strong>Title:</strong></div>
-                        <div><strong>Description:</strong></div>
+                        <div>
+                          <strong>Subject: {{ assignment.name }}</strong>
+                        </div>
+                        <div>
+                          <ul>
+                            <li v-for="(value, key) in assignment.data" :key="key">
+                              <span class="font-weight-bold">{{ key }}</span> {{ value }}
+                            </li>
+                          </ul>
+                        </div>
+                        <div><strong>Description: </strong></div>
                         <div><strong>Additional Notes:</strong></div>
                         <div><strong>Due Date:</strong></div>
                       </div>
@@ -50,6 +86,7 @@ const tab = ref('one')
                       </div>
                     </v-card-text>
                   </v-card>
+                  <v-divider></v-divider>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -59,3 +96,37 @@ const tab = ref('one')
     </v-card-text>
   </v-card>
 </template>
+
+<style scoped>
+/* WELCOME PAGE */
+.create-new-btn {
+  background: #095bea;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: 'Poppins';
+}
+
+/* DIALOG */
+
+.add-task-dialog {
+  border-radius: 30px; /* Round corners */
+  border: 2px solid #095bea; /* Adjust color as needed */
+  overflow: hidden;
+  background-color: #f7f9fa; /* Light background for contrast */
+}
+
+.cancel-btn {
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+}
+
+.save-btn {
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+  border: 2px solid #0097a7; /* Adjust color as needed */
+}
+
+/* END DIALOG */
+</style>
