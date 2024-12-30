@@ -41,7 +41,13 @@ export const useAssignmentsStore = defineStore('assignments', () => {
     assignments.value = data
   }
 
+  async function addAssignments(formData) {
+    const { image, ...data } = formData
+    return await supabase.from('assignments').insert([data]).select()
+  }
+
   return {
+    addAssignments,
     assignments,
     assignmentsFromApi,
     getAssignmentsFromApi,

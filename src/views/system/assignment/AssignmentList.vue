@@ -6,6 +6,7 @@ import AssignmentFormDialog from './AssignmentFormDialog.vue'
 const assignmentsStore = useAssignmentsStore()
 
 //Load Variables
+const itemData = ref(null)
 const isDialogVisible = ref(false)
 
 // Add Assignments
@@ -69,19 +70,23 @@ const showModal = ref(false)
                   <v-card class="mb-5 custom-border" elevation="0" outlined>
                     <v-card-text class="d-flex justify-space-between align-center">
                       <div>
-                        <div>
-                          <strong>Subject: {{ assignment.name }}</strong>
-                        </div>
-                        <div>
+                        <div v-if="assignment.data && Object.keys(assignment.data).length">
                           <ul>
                             <li v-for="(value, key) in assignment.data" :key="key">
-                              <span class="font-weight-bold">{{ key }}</span> {{ value }}
+                              <span class="font-weight-bold">{{ key }}</span
+                              >: {{ value }}
                             </li>
                           </ul>
                         </div>
-                        <div><strong>Description: </strong></div>
-                        <div><strong>Additional Notes:</strong></div>
-                        <div><strong>Due Date:</strong></div>
+
+                        <div>
+                          <strong>Description: </strong>{{ assignment.description || 'N/A' }}
+                        </div>
+                        <div>
+                          <strong>Additional Notes:</strong>
+                          {{ assignment.additional_notes || 'N/A' }}
+                        </div>
+                        <div><strong>Due Date:</strong> {{ assignment.due_date || 'N/A' }}</div>
                       </div>
                       <div>
                         <v-card-actions style="display: flex; justify-content: flex-end">
@@ -105,7 +110,10 @@ const showModal = ref(false)
     </v-card-text>
   </v-card>
 
-  <AssignmentFormDialog v-model:is-dialog-visible="isDialogVisible"></AssignmentFormDialog>
+  <AssignmentFormDialog
+    v-model:is-dialog-visible="isDialogVisible"
+    :item-data="itemData"
+  ></AssignmentFormDialog>
 </template>
 
 <style scoped>
