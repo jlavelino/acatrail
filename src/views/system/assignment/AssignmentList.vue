@@ -5,7 +5,7 @@ import { useAssignmentsStore } from '@/stores/assignments'
 const assignmentsStore = useAssignmentsStore()
 
 onMounted(async () => {
-  if (assignmentsStore.assignments.length == 0) await assignmentsStore.getAssignmentsFromApi()
+  if (assignmentsStore.assignments.length == 0) await assignmentsStore.getAssignments()
 })
 // for the tabs part
 const tab = ref('one')
