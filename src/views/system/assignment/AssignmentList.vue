@@ -1,8 +1,17 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useAssignmentsStore } from '@/stores/assignments'
+import AssignmentFormDialog from './AssignmentFormDialog.vue'
 
 const assignmentsStore = useAssignmentsStore()
+
+//Load Variables
+const isDialogVisible = ref(false)
+
+// Add Assignments
+const onAdd = () => {
+  isDialogVisible.value = true
+}
 
 onMounted(async () => {
   if (assignmentsStore.assignments.length == 0) await assignmentsStore.getAssignments()
@@ -41,7 +50,7 @@ const showModal = ref(false)
                 </v-card-item></v-col
               >
               <v-col class="pt-10"
-                ><button class="create-new-btn rounded-pill" @click="showModal = true">
+                ><button class="create-new-btn rounded-pill" @click="onAdd">
                   <i class="mdi mdi-plus"></i> Create Assignment
                 </button></v-col
               >
@@ -95,6 +104,8 @@ const showModal = ref(false)
       </v-tabs-window>
     </v-card-text>
   </v-card>
+
+  <AssignmentFormDialog v-model:is-dialog-visible="isDialogVisible"></AssignmentFormDialog>
 </template>
 
 <style scoped>
