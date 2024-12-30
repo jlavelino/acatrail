@@ -5,20 +5,23 @@ import { formActionDefault } from '@/utils/supabase.js'
 import { useAuthUserStore } from '@/stores/authUser'
 import { useDisplay } from 'vuetify'
 import { ref, watch } from 'vue'
+import { useAssignmentsStore } from '@/stores/assignments'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableFilters'])
 
 const emit = defineEmits(['update:isDialogVisible'])
 
 const { mdAndDown } = useDisplay()
+
+const assignmentsStore = useAssignmentsStore()
 const authStore = useAuthUserStore()
 
 const formDataDefault = {
-  name: '',
   description: '',
   additional_notes: '',
+  due_date: '',
   image: null,
-  user_id: authStore.userData?.id || null, // Fallback for user_id
+  user_id: authStore.userData?.id, // Fallback for user_id
 }
 const formData = ref({ ...formDataDefault })
 const formAction = ref({ ...formActionDefault })
@@ -36,15 +39,50 @@ watch(
   },
 )
 
+const onSubmit = async () => {
+  // Reset Form Action utils
+  formAction.value = { ...formActionDefault, formProcess: true }
+
+  try {
+    // Check if isUpdate is true, then do update; if false, add a new subject
+    const { data, error } = await assignmentsStore.addAssignments(formData.value)
+
+    if (error) {
+      // Add Error Message and Status Code
+      formAction.value.formErrorMessage = error.message
+      formAction.value.formStatus = error.status
+
+      // Turn off processing
+      formAction.value.formProcess = false
+    } else if (data) {
+      // Add Success Message
+      formAction.value.formSuccessMessage = isUpdate.value
+        ? 'Successfully Updated Subject Information.'
+        : 'Successfully Added Subject.'
+
+      // Refresh subjects with filters
+      await assignmentsStore.getAssignments(props.tableFilters)
+
+      // Reset Form and Close Dialog
+      setTimeout(() => {
+        onFormReset()
+      }, 2500)
+    }
+  } catch (err) {
+    formAction.value.formErrorMessage = err.message || 'An error occurred.'
+  } finally {
+    formAction.value.formProcess = false
+  }
+}
+
+// Trigger Validators
 const onFormSubmit = () => {
   refVForm.value?.validate().then(({ valid }) => {
-    if (valid) {
-      console.log('Form submitted:', formData.value)
-      emit('update:isDialogVisible', false) // Close dialog after submission
-    }
+    if (valid) onSubmit()
   })
 }
 
+// Form Reset
 const onFormReset = () => {
   formAction.value = { ...formActionDefault }
   formData.value = { ...formDataDefault }
