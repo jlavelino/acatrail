@@ -16,33 +16,29 @@ export const useAssignmentsStore = defineStore('assignments', () => {
     assignmentsFromApi.value = []
   }
 
-  // Retrieve assignments from API and insert into Supabase
+  // Retrieve from API and insert into Supabase
   async function getAssignmentsFromApi() {
     const response = await axios.get('https://api.restful-api.dev/objects')
     assignmentsFromApi.value = response.data
 
     const transformedData = assignmentsFromApi.value.map((assignment) => {
       return {
-        description: assignment.data?.description || '',
-        additional_notes: assignment.data?.additional_notes || '',
-        user_id: authStore.userData?.id || null, // Use logged-in user's ID
-        subjects_id: assignment.data?.userData?.id || null,
+        description: assignment.data?.description ?? '',
+        additional_notes: assignment.data?.additional_notes ?? '',
+        user_id: authStore.userData?.id, // Use logged-in user's ID
+        subjects_id: assignment.data?.userData?.id,
       }
     })
 
-    // Insert data into Supabase if transformedData is not empty
-    if (transformedData.length > 0) {
-      const { data } = await supabase.from('assignments').insert(transformedData).select()
-      if (data) {
-        await getAssignments() // Refresh assignments list
-      }
-    }
+    const { data } = await supabase.from('assignments').insert(transformedData).select()
+
+    console.log(data)
   }
 
   // Retrieve assignments from Supabase
   async function getAssignments() {
     const { data } = await supabase.from('assignments').select('*')
-    assignments.value = data || []
+    assignments.value = data
   }
 
   return {
