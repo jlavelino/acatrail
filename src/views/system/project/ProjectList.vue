@@ -14,6 +14,7 @@ const isConfirmDeleteDialog = ref(false) // Added this ref
 
 // Add project
 const onAdd = () => {
+  itemData.value = null
   isDialogVisible.value = true
 }
 
