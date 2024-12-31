@@ -55,6 +55,7 @@ const onPreview = async (event) => {
 
 // Function to reset preview if file-input clear is clicked
 const onPreviewReset = () => {
+  formData.value.image = null
   imgPreview.value = formData.value.image_url ?? '/images/img-product.png'
 }
 
@@ -101,6 +102,7 @@ const onFormSubmit = () => {
 const onFormReset = () => {
   formAction.value = { ...formActionDefault }
   formData.value = { ...formDataDefault }
+  imgPreview.value = '/images/img-product.png' // Reset the image preview
   emit('update:isDialogVisible', false)
 }
 </script>
