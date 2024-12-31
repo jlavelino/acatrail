@@ -31,7 +31,7 @@ export const useSubjectsStore = defineStore('subjects', () => {
 
     const { data } = await supabase.from('subjects').insert(transformedData).select()
 
-    //Trigger get items actions
+    // Trigger get items actions
     if (data) await getSubjects({ search: '' })
   }
 
@@ -45,48 +45,107 @@ export const useSubjectsStore = defineStore('subjects', () => {
       .ilike('name', '%' + search + '%')
     subjects.value = data
   }
+
   // Add a new subject
   async function addSubject(formData) {
     const { image, ...data } = formData
-    // check if there is image uploaded in form
-    if (formData.image) {
-      // upload image in supabase and get url
-      formData.image_url = await updateSubjectImage(formData.image, formData.name)
+
+    // Check if there is an image uploaded in the form
+    if (image) {
+      // Upload the image and get its URL
+      const imageUrl = await updateSubjectImage(image, formData.name)
+      if (imageUrl) {
+        formData.image_url = imageUrl // Set the image URL in form data
+      } else {
+        console.error('Image upload failed, no URL returned.')
+      }
+
+      // Remove image from form data (as it's already uploaded)
       delete formData.image
     }
 
-    // insert form data in subject
-    return await supabase.from('subjects').insert([data]).select()
+    // Insert form data into subjects table in Supabase
+    const { data: insertedData, error } = await supabase
+      .from('subjects')
+      .insert([formData])
+      .select()
+
+    if (error) {
+      console.error('Error inserting subject:', error.message)
+      return { error }
+    }
+
+    return { data: insertedData }
   }
 
   // Update Subjects
   async function updateSubject(formData) {
-    // check if there is image uploaded in form
+    // Check if there is an image uploaded in the form
     if (formData.image) {
-      // upload image in supabase and get url
-      formData.image_url = await updateSubjectImage(formData.image, formData.name)
+      // Upload the image and get its URL
+      const imageUrl = await updateSubjectImage(formData.image, formData.name)
+      if (imageUrl) {
+        formData.image_url = imageUrl // Set the image URL in form data
+      } else {
+        console.error('Image upload failed, no URL returned.')
+      }
+
+      // Remove image from form data (as it's already uploaded)
       delete formData.image
     }
 
-    // update for data in subject
-    return await supabase.from('subjects').update(formData).eq('id', formData.id).select()
+    // Update the subject in the subjects table in Supabase
+    const { data: updatedData, error } = await supabase
+      .from('subjects')
+      .update(formData)
+      .eq('id', formData.id)
+      .select()
+
+    if (error) {
+      console.error('Error updating subject:', error.message)
+      return { error }
+    }
+
+    return { data: updatedData }
   }
 
   // Update Product Image
   async function updateSubjectImage(file, filename) {
-    // Upload the file with the file name and file extension
-    const { data } = await supabase.storage
-      .from('acatrail')
-      .upload('subjects/' + getSlugText(filename) + '.png', file, {
+    try {
+      // Generate a valid file path
+      const filePath = 'subjects/' + getSlugText(filename) + '.png'
+
+      // Upload the file with the file name and file extension
+      const { data, error } = await supabase.storage.from('acatrail').upload(filePath, file, {
         cacheControl: '3600',
         upsert: true,
       })
 
-    // If no error set data to userData state with the image_url
-    if (data) {
-      // Retrieve Image Public Url
-      const { data: imageData } = supabase.storage.from('acatrail').getPublicUrl(data.path)
+      // Check for upload error
+      if (error) {
+        console.error('Error uploading image:', error.message)
+        return null
+      }
+
+      // Log the data for debugging
+      console.log('Upload success, data:', data)
+
+      // Retrieve Image Public URL
+      const { data: imageData, error: urlError } = await supabase.storage
+        .from('acatrail')
+        .getPublicUrl(data.path)
+
+      // Check for URL retrieval error
+      if (urlError) {
+        console.error('Error retrieving image URL:', urlError.message)
+        return null
+      }
+
+      // Return the public URL
       return imageData.publicUrl
+    } catch (err) {
+      console.error('Unexpected error in image upload:', err)
+      return null
     }
   }
 
