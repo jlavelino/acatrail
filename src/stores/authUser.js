@@ -4,25 +4,39 @@ import { defineStore } from 'pinia'
 
 export const useAuthUserStore = defineStore('authUser', () => {
   // States
-  const userData = ref(null)
+  const userData = ref({
+    id: null,
+    email: '',
+    firstname: '',
+    lastname: '',
+    user_role: '',
+    branch: '',
+    image_url: '',
+  })
   const authPages = ref([])
   const authBranchIds = ref([])
 
   // Getters
-  // Computed Properties; Use for getting the state but not modifying its reactive state
   const userRole = computed(() => {
-    return userData.value?.is_admin ? 'Super Administrator' : userData.value.user_role
+    return userData.value.is_admin ? 'Super Administrator' : userData.value.user_role || 'User'
   })
 
   // Reset State Action
   function $reset() {
-    userData.value = null
+    userData.value = {
+      id: null,
+      email: '',
+      firstname: '',
+      lastname: '',
+      user_role: '',
+      branch: '',
+      image_url: '',
+    }
     authPages.value = []
     authBranchIds.value = []
   }
 
   // Actions
-  // Retrieve User Session if Logged
   async function isAuthenticated() {
     const { data, error } = await supabase.auth.getSession()
 
@@ -33,96 +47,112 @@ export const useAuthUserStore = defineStore('authUser', () => {
 
     if (data.session) {
       const { id, email, user_metadata } = data.session.user
-      userData.value = { id, email, ...user_metadata }
+      userData.value = {
+        id,
+        email,
+        firstname: user_metadata?.firstname || '',
+        lastname: user_metadata?.lastname || '',
+        user_role: user_metadata?.user_role || 'User',
+        branch: user_metadata?.branch || '',
+        image_url: user_metadata?.image_url || '',
+      }
     }
 
     return !!data.session
   }
 
-  // Retrieve User Information
   async function getUserInformation() {
     const {
-      data: {
-        // Retrieve Id, Email and Metadata thru Destructuring
-        user: { id, email, user_metadata },
-      },
+      data: { user },
     } = await supabase.auth.getUser()
 
-    // Set the retrieved information to state
-    userData.value = { id, email, ...user_metadata }
+    if (user) {
+      const { id, email, user_metadata } = user
+      userData.value = {
+        id,
+        email,
+        firstname: user_metadata?.firstname || '',
+        lastname: user_metadata?.lastname || '',
+        user_role: user_metadata?.user_role || 'User',
+        branch: user_metadata?.branch || '',
+        image_url: user_metadata?.image_url || '',
+      }
+    }
   }
 
-  // Retrieve User Roles Pages
   async function getAuthPages(name) {
     const { data } = await supabase
       .from('user_roles')
       .select('*, pages: user_role_pages (page)')
       .eq('user_role', name)
 
-    // Set the retrieved data to state
-    authPages.value = data[0].pages.map((p) => p.page)
+    authPages.value = data?.[0]?.pages?.map((p) => p.page) || []
   }
 
-  // Retrieve Branch Ids
   async function getAuthBranchIds() {
+    if (!userData.value.branch) {
+      authBranchIds.value = []
+      return
+    }
+
     const { data } = await supabase
       .from('branches')
       .select('id')
       .in('name', userData.value.branch.split(','))
 
-    authBranchIds.value = data.map((b) => b.id)
+    authBranchIds.value = data?.map((b) => b.id) || []
   }
 
-  // Update User Information
   async function updateUserInformation(updatedData) {
-    const {
-      data: {
-        // Retrieve Id, Email and Metadata thru Destructuring
-        user: { id, email, user_metadata },
-      },
-      error,
-    } = await supabase.auth.updateUser({
-      data: {
-        ...updatedData,
-      },
+    const { data, error } = await supabase.auth.updateUser({
+      data: { ...updatedData },
     })
 
-    // Check if it has error
     if (error) {
       return { error }
     }
-    // If no error set updatedData to userData state
-    else if (user_metadata) {
-      userData.value = { id, email, ...user_metadata }
+
+    if (data.user) {
+      const { id, email, user_metadata } = data.user
+      userData.value = {
+        id,
+        email,
+        firstname: user_metadata?.firstname || '',
+        lastname: user_metadata?.lastname || '',
+        user_role: user_metadata?.user_role || 'User',
+        branch: user_metadata?.branch || '',
+        image_url: user_metadata?.image_url || '',
+      }
 
       return { data: userData.value }
     }
   }
 
-  // Update User Profile Image
   async function updateUserImage(file) {
-    // Get the file extension from the uploaded file
-    // const fileExtension = file.name.split('.').pop()
-
-    // Upload the file with the user ID and file extension
     const { data, error } = await supabase.storage
-      .from('shirlix')
+      .from('acatrail')
       .upload('avatars/' + userData.value.id + '-avatar.png', file, {
         cacheControl: '3600',
         upsert: true,
       })
 
-    // Check if it has error
     if (error) {
       return { error }
     }
-    // If no error set data to userData state with the image_url
-    else if (data) {
-      // Retrieve Image Public Url
-      const { data: imageData } = supabase.storage.from('shirlix').getPublicUrl(data.path)
 
-      // Update the user information with the new image_url
-      return await updateUserInformation({ ...userData.value, image_url: imageData.publicUrl })
+    if (data) {
+      const { data: imageData, error: imageError } = supabase.storage
+        .from('acatrail')
+        .getPublicUrl(data.path)
+
+      if (imageError) {
+        return { error: imageError }
+      }
+
+      return await updateUserInformation({
+        ...userData.value,
+        image_url: imageData.publicUrl,
+      })
     }
   }
 

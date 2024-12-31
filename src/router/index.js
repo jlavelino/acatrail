@@ -7,6 +7,7 @@ import NotFoundView from '@/views/errors/NotFoundView.vue'
 import SubjectView from '@/views/system/subject/SubjectView.vue'
 import AssignmentView from '@/views/system/assignment/AssignmentView.vue'
 import ProjectView from '@/views/system/project/ProjectView.vue'
+import AccountSettingsView from '@/views/system/AccountSettingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +41,12 @@ const router = createRouter({
       path: '/projects',
       name: 'projects',
       component: ProjectView,
+    },
+
+    {
+      path: '/account/settings',
+      name: 'account-settings',
+      component: AccountSettingsView,
     },
     {
       path: '/:catchAll(.*)',

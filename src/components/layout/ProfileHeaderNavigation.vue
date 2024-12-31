@@ -75,7 +75,7 @@ onMounted(() => {
 
         <v-divider class="my-3"></v-divider>
 
-        <v-btn prepend-icon="mdi mdi-cog">Account Settings</v-btn>
+        <v-btn prepend-icon="mdi mdi-cog" to="/account/settings">Account Settings</v-btn>
 
         <v-divider class="my-3"></v-divider>
 
