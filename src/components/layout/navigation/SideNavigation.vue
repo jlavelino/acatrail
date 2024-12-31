@@ -26,7 +26,7 @@ watch(
     :persistent="mobile"
     :temporary="mobile"
     :permanent="!mobile"
-    width="325"
+    width="250"
   >
     <v-list density="compact" nav>
       <!-- Dashboard -->
