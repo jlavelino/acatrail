@@ -6,6 +6,7 @@ import DashBoardView from '@/views/system/DashBoardView.vue'
 import NotFoundView from '@/views/errors/NotFoundView.vue'
 import SubjectView from '@/views/system/subject/SubjectView.vue'
 import AssignmentView from '@/views/system/assignment/AssignmentView.vue'
+import ProjectView from '@/views/system/project/ProjectView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +35,11 @@ const router = createRouter({
       path: '/assignments',
       name: 'assignments',
       component: AssignmentView,
+    },
+    {
+      path: '/projects',
+      name: 'projects',
+      component: ProjectView,
     },
     {
       path: '/:catchAll(.*)',
