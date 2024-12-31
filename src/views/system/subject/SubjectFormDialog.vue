@@ -7,8 +7,8 @@ import { fileExtract } from '@/utils/helpers'
 import { useDisplay } from 'vuetify'
 import { ref, watch } from 'vue'
 import { imageValidator } from '@/utils/validators'
-const props = defineProps(['isDialogVisible', 'itemData', 'tableFilters'])
 
+const props = defineProps(['isDialogVisible', 'itemData', 'tableFilters'])
 const emit = defineEmits(['update:isDialogVisible'])
 
 // Utilize pre-defined Vue functions
@@ -72,19 +72,13 @@ const onSubmit = async () => {
       // Add Error Message and Status Code
       formAction.value.formErrorMessage = error.message
       formAction.value.formStatus = error.status
-
-      // Turn off processing
       formAction.value.formProcess = false
     } else if (data) {
-      // Add Success Message
       formAction.value.formSuccessMessage = isUpdate.value
         ? 'Successfully Updated Subject Information.'
         : 'Successfully Added Subject.'
-
-      // Refresh subjects with filters
       await subjectsStore.getSubjects(props.tableFilters)
 
-      // Reset Form and Close Dialog
       setTimeout(() => {
         onFormReset()
       }, 2500)
@@ -162,8 +156,7 @@ const onFormReset = () => {
                 :src="imgPreview"
                 alt="Subject Picture Preview"
                 cover
-              >
-              </v-img>
+              ></v-img>
             </v-col>
 
             <v-col cols="12" sm="6" md="8">
@@ -187,16 +180,13 @@ const onFormReset = () => {
 
         <v-card-actions class="pa-4">
           <v-spacer></v-spacer>
-
           <v-btn text variant="plain" prepend-icon="mdi-close" @click="onFormReset"> Close </v-btn>
-
           <v-btn
-            prepend-icon=" mdi-plus-box"
+            prepend-icon="mdi-plus-box"
             color="red-darken-4"
             type="submit"
-            variant="elevated"
-            :disabled="formAction.formProcess"
             :loading="formAction.formProcess"
+            :disabled="formAction.formProcess"
           >
             {{ isUpdate ? 'Update Subject' : 'Add Subject' }}
           </v-btn>
