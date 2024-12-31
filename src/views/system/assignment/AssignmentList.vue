@@ -66,7 +66,6 @@ const showModal = ref(false)
                   :key="assignment.id"
                 >
                   <h3 class="text-h6 mb-4"><strong>Tasks</strong></h3>
-
                   <v-card class="mb-5 custom-border" elevation="0" outlined>
                     <v-card-text class="d-flex justify-space-between align-center">
                       <div>
@@ -87,6 +86,14 @@ const showModal = ref(false)
                           {{ assignment.additional_notes || 'N/A' }}
                         </div>
                         <div><strong>Due Date:</strong> {{ assignment.due_date || 'N/A' }}</div>
+
+                        <!-- Image -->
+                        <v-img
+                          v-if="assignment.image_url"
+                          :src="assignment.image_url"
+                          height="150"
+                          cover
+                        ></v-img>
                       </div>
                       <div>
                         <v-card-actions style="display: flex; justify-content: flex-end">
