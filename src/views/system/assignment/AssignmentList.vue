@@ -2,26 +2,57 @@
 import { onMounted, ref } from 'vue'
 import { useAssignmentsStore } from '@/stores/assignments'
 import AssignmentFormDialog from './AssignmentFormDialog.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const assignmentsStore = useAssignmentsStore()
 
-//Load Variables
+// Load Variables
 const itemData = ref(null)
 const isDialogVisible = ref(false)
+const deleteId = ref(null)
+const isConfirmDeleteDialog = ref(false) // Added this ref
 
 // Add Assignments
 const onAdd = () => {
   isDialogVisible.value = true
 }
 
-onMounted(async () => {
-  if (assignmentsStore.assignments.length == 0) await assignmentsStore.getAssignments()
-})
-// for the tabs part
-const tab = ref('one')
+// Update Assignment
+const onUpdate = (assignment) => {
+  itemData.value = assignment
+  isDialogVisible.value = true
+}
 
-// for the modal visibility
-const showModal = ref(false)
+// Trigger Delete Dialog
+const onDelete = (id) => {
+  deleteId.value = id
+  isConfirmDeleteDialog.value = true // Set dialog visibility to true
+}
+
+// Confirm Delete
+const onConfirmDelete = async () => {
+  try {
+    const { error } = await assignmentsStore.deleteAssignments(deleteId.value)
+    if (error) {
+      console.error(error.message)
+      return
+    }
+    // Refresh the assignments list
+    await assignmentsStore.getAssignments()
+    isConfirmDeleteDialog.value = false // Hide dialog after successful deletion
+  } catch (err) {
+    console.error('Error deleting assignment:', err.message)
+  }
+}
+
+onMounted(async () => {
+  if (assignmentsStore.assignments.length === 0) {
+    await assignmentsStore.getAssignments()
+  }
+})
+
+// For the tabs part
+const tab = ref('one')
 </script>
 
 <template>
@@ -50,11 +81,11 @@ const showModal = ref(false)
                   </v-card-subtitle>
                 </v-card-item></v-col
               >
-              <v-col class="pt-10"
-                ><button class="create-new-btn rounded-pill" @click="onAdd">
+              <v-col class="pt-10">
+                <button class="create-new-btn rounded-pill" @click="onAdd">
                   <i class="mdi mdi-plus"></i> Create Assignment
-                </button></v-col
-              >
+                </button>
+              </v-col>
             </v-row>
 
             <v-card-text>
@@ -97,10 +128,22 @@ const showModal = ref(false)
                       </div>
                       <div>
                         <v-card-actions style="display: flex; justify-content: flex-end">
-                          <v-btn icon variant="elevated" density="comfortable" color="black">
+                          <v-btn
+                            icon
+                            variant="elevated"
+                            density="comfortable"
+                            color="black"
+                            @click="onUpdate(assignment)"
+                          >
                             <v-icon size="20">mdi-pencil</v-icon>
                           </v-btn>
-                          <v-btn icon variant="elevated" density="comfortable" color="red">
+                          <v-btn
+                            icon
+                            variant="elevated"
+                            density="comfortable"
+                            color="red"
+                            @click="onDelete(assignment.id)"
+                          >
                             <v-icon size="20">mdi-delete</v-icon>
                           </v-btn>
                         </v-card-actions>
@@ -121,10 +164,17 @@ const showModal = ref(false)
     v-model:is-dialog-visible="isDialogVisible"
     :item-data="itemData"
   ></AssignmentFormDialog>
+
+  <ConfirmDialog
+    v-model:is-dialog-visible="isConfirmDeleteDialog"
+    title="Confirm Delete"
+    text="Are you sure you want to delete this assignment?"
+    @confirm="onConfirmDelete"
+  ></ConfirmDialog>
 </template>
 
 <style scoped>
-/* WELCOME PAGE */
+/* STYLING */
 .create-new-btn {
   background: #095bea;
   color: white;
@@ -133,26 +183,4 @@ const showModal = ref(false)
   cursor: pointer;
   font-family: 'Poppins';
 }
-
-/* DIALOG */
-
-.add-task-dialog {
-  border-radius: 30px; /* Round corners */
-  border: 2px solid #095bea; /* Adjust color as needed */
-  overflow: hidden;
-  background-color: #f7f9fa; /* Light background for contrast */
-}
-
-.cancel-btn {
-  font-family: 'Poppins', sans-serif;
-  font-weight: bold;
-}
-
-.save-btn {
-  font-family: 'Poppins', sans-serif;
-  font-weight: bold;
-  border: 2px solid #0097a7; /* Adjust color as needed */
-}
-
-/* END DIALOG */
 </style>

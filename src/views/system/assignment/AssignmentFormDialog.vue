@@ -55,7 +55,9 @@ const onPreviewReset = () => {
 const onSubmit = async () => {
   formAction.value = { ...formActionDefault, formProcess: true }
   try {
-    const result = await assignmentsStore.addAssignments(formData.value)
+    const result = isUpdate.value
+      ? await assignmentsStore.updateAssignments(formData.value)
+      : await assignmentsStore.addAssignments(formData.value)
     formAction.value.formSuccessMessage = isUpdate.value
       ? 'Successfully updated assignment.'
       : 'Successfully added assignment.'

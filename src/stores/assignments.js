@@ -99,7 +99,35 @@ export const useAssignmentsStore = defineStore('assignments', () => {
     }
   }
 
+  // update assignment
+  async function updateAssignments(formData) {
+    const { image } = formData
+    if (formData.image) {
+      formData.image_url = await updateAssignmentImage(image, formData.name)
+      delete formData.image
+    }
+    return await supabase.from('assignments').update(formData).eq('id', formData.id).select()
+  }
+
+  // Delete a subject by ID
+  async function deleteAssignments(id) {
+    try {
+      const { error } = await supabase.from('assignments').delete().eq('id', id)
+      if (error) {
+        console.error('Error deleting subject:', error.message)
+        return { error }
+      }
+      // Update the local assignments array after deletion
+      assignments.value = assignments.value.filter((assignment) => assignment.id !== id)
+      return { success: true }
+    } catch (error) {
+      console.error('Error deleting assignment:', error.message)
+      return { error }
+    }
+  }
   return {
+    deleteAssignments,
+    updateAssignments,
     addAssignments,
     assignments,
     assignmentsFromApi,
