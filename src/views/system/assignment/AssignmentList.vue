@@ -118,7 +118,7 @@ const tab = ref('one')
                           {{ assignment.additional_notes || 'N/A' }}
                         </div>
                         <div><strong>Due Date:</strong> {{ assignment.due_date || 'N/A' }}</div>
-
+                        <div><strong>Due Time:</strong> {{ assignment.due_time || 'N/A' }}</div>
                         <!-- Image -->
                         <v-img
                           v-if="assignment.image_url"
