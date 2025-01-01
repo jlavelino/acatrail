@@ -53,10 +53,7 @@ const visible = ref(false) // Define `visible` here
 
 <style scoped>
 main {
-  background-image: url('/public/back_image.jpg');
-  background-size: cover;
-  background-attachment: fixed;
-  background-position: center;
+  background-color: white; /* Set background color to white */
 }
 
 /* Bounce animation */
