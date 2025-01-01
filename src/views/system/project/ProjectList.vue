@@ -114,6 +114,7 @@ const tab = ref('one')
                           {{ project.additional_notes || 'N/A' }}
                         </div>
                         <div><strong>Due Date:</strong> {{ project.due_date || 'N/A' }}</div>
+                        <div><strong>Due Time:</strong> {{ project.due_time || 'N/A' }}</div>
 
                         <!-- Image -->
                         <v-img

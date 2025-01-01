@@ -19,6 +19,7 @@ const formDataDefault = {
   description: '',
   additional_notes: '',
   due_date: '',
+  due_time: '',
   image: null,
   user_id: authStore.userData?.id,
 }
@@ -123,8 +124,18 @@ const onFormReset = () => {
                 v-model="formData.due_date"
                 label="Due Date"
                 :rules="[requiredValidator]"
+                type="date"
               ></v-text-field>
             </v-col>
+            <v-col cols="12">
+              <v-text-field
+                v-model="formData.due_time"
+                label="Due Time"
+                :rules="[requiredValidator]"
+                type="time"
+              ></v-text-field>
+            </v-col>
+
             <v-col cols="12" sm="6" md="4">
               <v-img
                 width="55%"
