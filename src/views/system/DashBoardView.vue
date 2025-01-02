@@ -1,10 +1,27 @@
 <script setup>
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
+import ProjectFormDialog from './project/ProjectFormDialog.vue'
+import AssignmentFormDialog from './assignment/AssignmentFormDialog.vue'
 
 import { ref } from 'vue'
 import { useDisplay } from 'vuetify'
 const isDrawerVisible = ref(true)
+const itemData = ref(null)
+// Separate visibility states for project and assignment dialogs
+const isProjectDialogVisible = ref(false)
+const isAssignmentDialogVisible = ref(false)
+
+// Show project dialog
+const onAdd = () => {
+  itemData.value = null
+  isProjectDialogVisible.value = true
+}
+// Show assignment dialog
+const onAddAssignment = () => {
+  itemData.value = null
+  isAssignmentDialogVisible.value = true
+}
 </script>
 
 <template>
@@ -18,7 +35,7 @@ const isDrawerVisible = ref(true)
     <template #content>
       <v-container>
         <v-row>
-          <v-container class="pa-16 pb-10 d-flex justify-center">
+          <v-container class="pb-10 d-flex justify-center">
             <v-img src="/images/homepage.JPG" alt="AcaTrail Logo" height="400" width="1000" cover />
           </v-container>
         </v-row>
@@ -33,7 +50,7 @@ const isDrawerVisible = ref(true)
           </i>
         </p>
 
-        <h4 class="text-center">Welcome Message from AcaTrail</h4>
+        <h4 class="text-center"><i>'Welcome Message from AcaTrail'</i></h4>
 
         <!-- Divider -->
         <v-divider :thickness="2" class="border-opacity-100 mt-3" color="info"></v-divider>
@@ -43,45 +60,75 @@ const isDrawerVisible = ref(true)
               <v-carousel-item
                 class="justify-center"
                 src="/carousel_image/it110.jpg"
-                alt="IT 110 Image"
                 height="300"
               ></v-carousel-item>
 
               <v-carousel-item
                 class="justify-center"
                 src="/carousel_image/ite15.png"
-                alt="Hotel Image"
                 height="300"
               ></v-carousel-item>
 
               <v-carousel-item
                 class="justify-center"
                 src="/carousel_image/107.png"
-                alt="Sunshine Image"
                 height="300"
               ></v-carousel-item>
               <v-carousel-item
                 class="justify-center"
                 src="/carousel_image/ETHICS.jpg"
-                alt="Sunshine Image"
                 height="300"
               ></v-carousel-item>
               <v-carousel-item
                 class="justify-center"
                 src="/carousel_image/pc.png"
-                alt="Sunshine Image"
                 height="300"
               ></v-carousel-item>
               <v-carousel-item
                 class="justify-center"
                 src="/carousel_image/pe.png"
-                alt="Sunshine Image"
                 height="300"
               ></v-carousel-item>
             </v-carousel>
+            <v-row class="d-flex justify-center align-center">
+              <!-- Add Assignment button on the left with margin -->
+              <v-col cols="6" class="pt-5 pr-5 d-flex justify-start">
+                <button class="create-new-btn rounded-pill" @click="onAddAssignment">
+                  <i class="mdi mdi-plus"></i> Add Assignment
+                </button>
+              </v-col>
+
+              <!-- Create Project button on the right with margin -->
+              <v-col cols="6" class="pt-5 pl-5 d-flex justify-end">
+                <button class="create-new-btn rounded-pill" @click="onAdd">
+                  <i class="mdi mdi-plus"></i> Create Project
+                </button>
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
       </v-container>
     </template>
   </AppLayout>
+
+  <!-- Separate dialogs for project and assignment -->
+  <ProjectFormDialog
+    v-model:is-dialog-visible="isProjectDialogVisible"
+    :item-data="itemData"
+  ></ProjectFormDialog>
+
+  <AssignmentFormDialog
+    v-model:is-dialog-visible="isAssignmentDialogVisible"
+    :item-data="itemData"
+  ></AssignmentFormDialog>
 </template>
+<style scoped>
+.create-new-btn {
+  background: #095bea;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: 'Poppins';
+}
+</style>
