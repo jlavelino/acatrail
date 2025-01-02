@@ -75,7 +75,7 @@ export const useProjectsStore = defineStore('projects', () => {
 
   // Update Product Image
   async function updateProjectImage(file, filename) {
-    const filePath = `assignments/${getSlugText(filename)}.png`
+    const filePath = `projects/${getSlugText(filename)}.png`
     try {
       const { data, error } = await supabase.storage.from('acatrail').upload(filePath, file, {
         cacheControl: '3600',
@@ -122,7 +122,27 @@ export const useProjectsStore = defineStore('projects', () => {
       return { error }
     }
   }
+
+  // Finish an projects
+  async function finishProject(id) {
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .update({ status: 'finished' })
+        .eq('id', id)
+        .select()
+      if (error) throw error
+
+      // Update the local projects list
+      projects.value = projects.value.filter((project) => project.id !== id)
+      return { success: true, data }
+    } catch (error) {
+      console.error('Error finishing projects:', error.message)
+      return { error }
+    }
+  }
   return {
+    finishProject,
     deleteProjects,
     updateProjects,
     addProjects,
