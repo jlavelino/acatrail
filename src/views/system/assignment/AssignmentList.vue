@@ -127,10 +127,17 @@ const tab = ref('one')
                     <strong>Assignment</strong>
                     <v-icon class="mdi mdi-alert-circle-outline" color="orange"></v-icon>
                   </h3>
-                  <v-col class="pt-5">
-                    <button class="create-new-btn rounded-pill" @click="onFinish(assignment.id)">
-                      <i class="mdi mdi-plus"></i> Finish Assignment
-                    </button>
+                  <v-col>
+                    <v-btn
+                      variant="elevated"
+                      density="comfortable"
+                      class="mt-2"
+                      color="green"
+                      @click="onFinish(assignment.id)"
+                      style="color: white"
+                    >
+                      <i class="mdi mdi-check-circle"></i> Finish Assignment
+                    </v-btn>
                   </v-col>
                   <v-card class="mb-5 custom-border" elevation="0" outlined>
                     <v-card-text class="d-flex justify-space-between align-center">
@@ -171,6 +178,11 @@ const tab = ref('one')
                         </v-btn>
                       </v-card-actions>
                     </v-card-text>
+                    <v-divider
+                      :thickness="2"
+                      class="border-opacity-100 mt-3"
+                      color="info"
+                    ></v-divider>
                   </v-card>
                 </v-col>
               </v-row>
@@ -232,7 +244,7 @@ const tab = ref('one')
                             <v-divider
                               :thickness="2"
                               class="border-opacity-100 mt-3"
-                              color="info"
+                              color="success"
                             ></v-divider>
                           </div>
                         </div>
