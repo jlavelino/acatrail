@@ -76,7 +76,7 @@ export const useAssignmentsStore = defineStore('assignments', () => {
     }
   }
 
-  // Update Product Image
+  // Update Assignment Image
   async function updateAssignmentImage(file, filename) {
     const filePath = `assignments/${getSlugText(filename)}.png`
     try {
@@ -125,7 +125,28 @@ export const useAssignmentsStore = defineStore('assignments', () => {
       return { error }
     }
   }
+
+  // Finish an assignment
+  async function finishAssignment(id) {
+    try {
+      const { data, error } = await supabase
+        .from('assignments')
+        .update({ status: 'finished' })
+        .eq('id', id)
+        .select()
+      if (error) throw error
+
+      // Update the local assignments list
+      assignments.value = assignments.value.filter((assignment) => assignment.id !== id)
+      return { success: true, data }
+    } catch (error) {
+      console.error('Error finishing assignment:', error.message)
+      return { error }
+    }
+  }
+
   return {
+    finishAssignment,
     deleteAssignments,
     updateAssignments,
     addAssignments,
