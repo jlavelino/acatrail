@@ -22,7 +22,7 @@ onMounted(() => {
 })
 
 const theme = ref('light')
-const visible = ref(false) // Define `visible` here
+const visible = ref(false) // Define visible here
 </script>
 
 <template>
@@ -36,6 +36,20 @@ const visible = ref(false) // Define `visible` here
           @click="emit('isDrawerVisible')"
         >
         </v-app-bar-nav-icon>
+
+        <!-- Move the image next to the menu -->
+        <v-img src="/images/AcaTrail.png" alt="AcaTrail Logo" height="50" contain class="ml-2" />
+        <span class="text-logo ms-2">Aca<span class="text-logos">Trail</span></span>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
         <!-- Add a spacer to push the ProfileHeaderNavigation to the right -->
         <v-spacer></v-spacer>
         <ProfileHeaderNavigation v-if="isLoggedIn"></ProfileHeaderNavigation>
@@ -104,5 +118,15 @@ h5 {
 .text-subtitle-1 {
   font-family: 'Arial', sans-serif;
   font-weight: 400;
+}
+/* Navigation Header Styles */
+.text-logo {
+  font-size: 35px;
+  font-weight: 900;
+  color: rgb(82, 80, 80);
+}
+
+.text-logos {
+  color: rgb(38, 0, 255);
 }
 </style>
