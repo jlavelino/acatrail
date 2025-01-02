@@ -178,8 +178,12 @@ const tab = ref('one')
                         </v-btn>
                       </v-card-actions>
                     </v-card-text>
+                    <v-divider
+                      :thickness="2"
+                      class="border-opacity-100 mt-3"
+                      color="info"
+                    ></v-divider>
                   </v-card>
-                  <v-divider></v-divider>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -235,7 +239,7 @@ const tab = ref('one')
                             <v-divider
                               :thickness="2"
                               class="border-opacity-100 mt-3"
-                              color="info"
+                              color="success"
                             ></v-divider>
                           </div>
                         </div>
