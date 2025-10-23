@@ -91,11 +91,7 @@ const onFormReset = () => {
 </script>
 
 <template>
-  <v-dialog
-    :max-width="mdAndDown ? undefined : '800'"
-    :model-value="props.isDialogVisible"
-    persistent
-  >
+  <v-dialog :max-width="mdAndDown ? '60vw' : '400'" :model-value="props.isDialogVisible" persistent>
     <v-card prepend-icon="mdi-information-box" title="Assignment Information">
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
@@ -105,54 +101,57 @@ const onFormReset = () => {
       <v-form ref="refVForm" @submit.prevent="onFormSubmit">
         <v-card-text>
           <v-row dense>
-            <v-col cols="12">
+            <v-col cols="12" sm="6">
               <v-text-field
                 v-model="formData.description"
                 label="Description"
                 :rules="[requiredValidator]"
+                dense
               ></v-text-field>
             </v-col>
-            <v-col cols="12" sm="5">
+            <v-col cols="12" sm="6">
               <v-text-field
                 v-model="formData.additional_notes"
                 label="Additional Notes"
                 :rules="[requiredValidator]"
+                dense
               ></v-text-field>
             </v-col>
-            <v-col cols="12">
+            <v-col cols="6">
               <v-text-field
                 v-model="formData.due_date"
                 label="Due Date"
                 :rules="[requiredValidator]"
                 type="date"
+                dense
               ></v-text-field>
             </v-col>
-            <v-col cols="12">
+            <v-col cols="6">
               <v-text-field
                 v-model="formData.due_time"
                 label="Due Time"
                 :rules="[requiredValidator]"
                 type="time"
+                dense
               ></v-text-field>
             </v-col>
-
-            <v-col cols="12" sm="6" md="4">
+            <v-col cols="12" sm="6">
               <v-img
-                width="55%"
+                width="100"
                 class="mx-auto rounded-circle"
                 :src="imgPreview"
                 alt="Assignment Picture Preview"
                 cover
               ></v-img>
             </v-col>
-            <v-col cols="12" sm="6" md="8">
+            <v-col cols="12" sm="6">
               <v-file-input
-                class="mt-5"
+                class="mt-2"
                 :rules="[imageValidator]"
                 accept="image/png, image/jpeg"
                 label="Browse Assignment Picture"
-                placeholder="Browse Assignment Picture"
                 prepend-icon="mdi-camera"
+                dense
                 show-size
                 chips
                 @change="onPreview"
@@ -162,7 +161,7 @@ const onFormReset = () => {
           </v-row>
         </v-card-text>
         <v-divider></v-divider>
-        <v-card-actions class="pa-4">
+        <v-card-actions class="pa-2">
           <v-spacer></v-spacer>
           <v-btn text variant="plain" prepend-icon="mdi-close" @click="onFormReset">Close</v-btn>
           <v-btn prepend-icon="mdi-plus-box" color="red-darken-4" type="submit" variant="elevated">
