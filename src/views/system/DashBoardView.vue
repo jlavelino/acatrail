@@ -34,94 +34,100 @@ const onAddAssignment = () => {
     </template>
     <template #content>
       <v-container>
-        <v-row>
-          <v-container class="pb-10 d-flex justify-center">
-            <v-img src="/images/homepage.JPG" alt="AcaTrail Logo" height="400" width="1000" cover />
-          </v-container>
-        </v-row>
-
-        <p style="text-align: justify; text-indent: 2em">
-          <i>
-            "Welcome to AcaTrail, your streamlined academic management companion, designed to guide
-            you through every step of your academic journey. Here, you can effortlessly organize
-            tasks, assignments, and projects, ensuring you stay on track and focused on achieving
-            your goals. Let us simplify your studies so you can excel with confidence and clarity.
-            Let’s start your journey to academic success together!"
-          </i>
-        </p>
-
-        <h4 class="text-center"><i>'Welcome Message from AcaTrail'</i></h4>
-
-        <!-- Divider -->
-        <v-divider :thickness="2" class="border-opacity-100 mt-3" color="info"></v-divider>
+        <!-- Welcome Banner -->
         <v-row>
           <v-col>
-            <v-carousel height="300" show-arrows="hover">
-              <v-carousel-item
-                class="justify-center"
-                src="/carousel_image/it110.jpg"
-                height="300"
-              ></v-carousel-item>
+            <v-img
+              src="/images/homepage.JPG"
+              alt="AcaTrail Banner"
+              height="220"
+              cover
+              class="rounded-lg mb-3"
+            />
+            <h2 class="font-weight-bold text-primary mt-0">Welcome to AcaTrail</h2>
+            <p class="text-muted" style="font-size: 17px">
+              Effortless academic management from schedule to success.
+            </p>
+          </v-col>
+        </v-row>
 
-              <v-carousel-item
-                class="justify-center"
-                src="/carousel_image/ite15.png"
-                height="300"
-              ></v-carousel-item>
+        <!-- Today Overview Cards -->
+        <v-row class="mb-4">
+          <v-col cols="12" md="4">
+            <v-card elevation="2" class="px-3 py-2">
+              <h3 class="mb-1 font-weight-bold">Today’s Classes</h3>
+              <div>10:00AM — IT 109-HIRAYA, Room CL7</div>
+              <div>1:30PM — IT 114-MASAWA, MH 104</div>
+              <!-- ...dynamically list student's schedule... -->
+              <v-btn small color="primary" class="mt-2" @click="goToFullSchedule"
+                >Full Schedule</v-btn
+              >
+            </v-card>
+          </v-col>
+          <v-col cols="12" md="4">
+            <v-card elevation="2" class="px-3 py-2">
+              <h3 class="mb-1 font-weight-bold">Upcoming Deadlines</h3>
+              <div>IT 199 — Project due at 08:00 PM</div>
+              <!-- Dynamically list...
+              Highlight if near due -->
+              <v-btn small color="deep-orange" class="mt-2" @click="showAssignments"
+                >View All Assignments</v-btn
+              >
+            </v-card>
+          </v-col>
+          <v-col cols="12" md="4">
+            <v-card elevation="2" class="px-3 py-2">
+              <h3 class="mb-1 font-weight-bold">Progress</h3>
+              <v-progress-linear
+                :value="75"
+                color="success"
+                height="8"
+                class="mb-1"
+              ></v-progress-linear>
+              <div>3/4 tasks completed this week</div>
+              <div class="text-success mt-1">Keep it up!</div>
+            </v-card>
+          </v-col>
+        </v-row>
 
-              <v-carousel-item
-                class="justify-center"
-                src="/carousel_image/107.png"
-                height="300"
-              ></v-carousel-item>
-              <v-carousel-item
-                class="justify-center"
-                src="/carousel_image/ETHICS.jpg"
-                height="300"
-              ></v-carousel-item>
-              <v-carousel-item
-                class="justify-center"
-                src="/carousel_image/pc.png"
-                height="300"
-              ></v-carousel-item>
-              <v-carousel-item
-                class="justify-center"
-                src="/carousel_image/pe.png"
-                height="300"
-              ></v-carousel-item>
-            </v-carousel>
-            <v-row class="d-flex justify-center align-center">
-              <!-- Add Assignment button on the left with margin -->
-              <v-col cols="6" class="pt-5 pr-5 d-flex justify-start">
-                <button class="create-new-btn rounded-pill" @click="onAddAssignment">
-                  <i class="mdi mdi-plus"></i> Add Assignment
-                </button>
-              </v-col>
+        <!-- Quick Actions -->
+        <v-row class="mb-2 d-flex justify-space-between">
+          <v-btn color="info" class="rounded-pill px-5" @click="onAddAssignment">
+            <v-icon left>mdi-plus</v-icon> Add Assignment
+          </v-btn>
+          <v-btn color="primary" class="rounded-pill px-5" @click="onAdd">
+            <v-icon left>mdi-plus</v-icon> Create Project
+          </v-btn>
+        </v-row>
 
-              <!-- Create Project button on the right with margin -->
-              <v-col cols="6" class="pt-5 pl-5 d-flex justify-end">
-                <button class="create-new-btn rounded-pill" @click="onAdd">
-                  <i class="mdi mdi-plus"></i> Create Project
-                </button>
-              </v-col>
-            </v-row>
+        <!-- Announcement/Motivation Card -->
+        <v-row>
+          <v-col>
+            <v-alert
+              type="info"
+              border="left"
+              color="primary lighten-3"
+              icon="mdi-lightbulb-on-outline"
+              elevation="2"
+            >
+              Tip: Start your most urgent assignment first, then move on to easier tasks!
+            </v-alert>
           </v-col>
         </v-row>
       </v-container>
     </template>
   </AppLayout>
-
-  <!-- Separate dialogs for project and assignment -->
+  <!-- Project & Assignment dialogs, unchanged -->
   <ProjectFormDialog
     v-model:is-dialog-visible="isProjectDialogVisible"
     :item-data="itemData"
   ></ProjectFormDialog>
-
   <AssignmentFormDialog
     v-model:is-dialog-visible="isAssignmentDialogVisible"
     :item-data="itemData"
   ></AssignmentFormDialog>
 </template>
+
 <style scoped>
 .create-new-btn {
   background: #095bea;
@@ -130,5 +136,8 @@ const onAddAssignment = () => {
   padding: 10px 20px;
   cursor: pointer;
   font-family: 'Poppins';
+}
+.text-primary {
+  color: #095bea;
 }
 </style>

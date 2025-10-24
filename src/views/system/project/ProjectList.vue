@@ -121,68 +121,43 @@ const tab = ref('one')
                   v-for="project in projectsStore.projects.filter((p) => p.status !== 'finished')"
                   :key="project.id"
                 >
-                  <h3 class="text-h6">
-                    <strong>Project</strong>
-                    <v-icon class="mdi mdi-alert-circle-outline" color="orange"></v-icon>
-                  </h3>
-                  <v-col>
-                    <v-btn
-                      variant="elevated"
-                      density="comfortable"
-                      class="mt-2"
-                      color="green"
-                      @click="onFinish(project.id)"
-                      style="color: white"
-                    >
-                      <i class="mdi mdi-check-circle"></i> Finish Project
-                    </v-btn>
-                  </v-col>
-                  <v-card class="mb-5 custom-border" elevation="0" outlined>
-                    <v-card-text class="d-flex justify-space-between align-center">
-                      <div>
-                        <h4><strong>Description: </strong>{{ project.description || 'N/A' }}</h4>
-                        <h4>
-                          <strong>Additional Notes:</strong>
-                          {{ project.additional_notes || 'N/A' }}
-                        </h4>
-                        <h4><strong>Due Date:</strong> {{ project.due_date || 'N/A' }}</h4>
-                        <h4><strong>Due Time:</strong> {{ project.due_time || 'N/A' }}</h4>
-                      </div>
-                      <!-- Image -->
-                      <v-img
-                        v-if="project.image_url"
-                        :src="project.image_url"
-                        height="150"
-                        width="150"
-                        class="ml-4"
-                      ></v-img>
-
-                      <v-card-actions>
-                        <v-btn
-                          icon
-                          variant="elevated"
-                          density="comfortable"
-                          color="black"
-                          @click="onUpdate(project)"
-                        >
-                          <v-icon size="20">mdi-pencil</v-icon>
-                        </v-btn>
-                        <v-btn
-                          icon
-                          variant="elevated"
-                          density="comfortable"
-                          color="red"
-                          @click="onDelete(project.id)"
-                        >
-                          <v-icon size="20">mdi-delete</v-icon>
-                        </v-btn>
-                      </v-card-actions>
-                    </v-card-text>
-                    <v-divider
-                      :thickness="2"
-                      class="border-opacity-100 mt-3"
-                      color="info"
-                    ></v-divider>
+                  <v-card class="project-blessed" elevation="3">
+                    <v-row align="center" justify="space-between" class="px-4 py-2">
+                      <v-col cols="8">
+                        <div class="d-flex align-center mb-2">
+                          <v-icon color="orange" size="26" class="mr-1"
+                            >mdi-lightbulb-on-outline</v-icon
+                          >
+                          <span class="project-title">Project</span>
+                        </div>
+                        <div class="project-details-list">
+                          <div>
+                            <strong>Description:</strong> {{ project.description || 'N/A' }}
+                          </div>
+                          <div><strong>Notes:</strong> {{ project.additional_notes || 'N/A' }}</div>
+                          <div><strong>Due Date:</strong> {{ project.due_date || 'N/A' }}</div>
+                          <div><strong>Due Time:</strong> {{ project.due_time || 'N/A' }}</div>
+                        </div>
+                      </v-col>
+                      <v-col cols="4" class="d-flex flex-column align-end">
+                        <v-row>
+                          <v-btn
+                            color="success"
+                            @click="onFinish(project.id)"
+                            size="small"
+                            rounded
+                            class="mr-2"
+                            >FINISH PROJECT</v-btn
+                          >
+                          <v-btn icon @click="onUpdate(project)" color="black" rounded
+                            ><v-icon>mdi-pencil</v-icon></v-btn
+                          >
+                          <v-btn icon @click="onDelete(project.id)" color="red" rounded
+                            ><v-icon>mdi-delete</v-icon></v-btn
+                          >
+                        </v-row>
+                      </v-col>
+                    </v-row>
                   </v-card>
                 </v-col>
               </v-row>
@@ -280,5 +255,36 @@ const tab = ref('one')
   padding: 10px 20px;
   cursor: pointer;
   font-family: 'Poppins';
+}
+.project-card {
+  min-width: 300px;
+  padding: 18px 25px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: none;
+  background-color: #fff;
+}
+.project-details-list > div {
+  margin-bottom: 4px;
+  font-size: 16px;
+}
+.project-blessed {
+  background: linear-gradient(135deg, #f5fcff 80%, #dbeafe 100%);
+  border-radius: 18px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  min-width: 330px;
+  transition: box-shadow 0.2s;
+}
+.project-title {
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #0846b2;
+  letter-spacing: 0.5px;
+}
+.project-details-list > div {
+  margin-bottom: 3px;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
 }
 </style>
