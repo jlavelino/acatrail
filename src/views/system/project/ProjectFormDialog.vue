@@ -6,7 +6,6 @@ import { useAuthUserStore } from '@/stores/authUser'
 import { useDisplay } from 'vuetify'
 import { ref, watch } from 'vue'
 import { useProjectsStore } from '@/stores/projects'
-
 import { fileExtract } from '@/utils/helpers'
 
 const props = defineProps(['isDialogVisible', 'itemData'])
@@ -23,6 +22,7 @@ const formDataDefault = {
   due_time: '',
   image: null,
   user_id: authStore.userData?.id,
+  checklist: [],
 }
 const formData = ref({ ...formDataDefault })
 const formAction = ref({ ...formActionDefault })
@@ -30,30 +30,27 @@ const refVForm = ref()
 const isUpdate = ref(false)
 const imgPreview = ref('/images/img-product.png') // Default placeholder image
 
-// Watch for itemData changes to either populate the form or reset it
 watch(
   () => props.itemData,
   () => {
     isUpdate.value = !!props.itemData
-    formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
+    formData.value = props.itemData
+      ? { ...props.itemData, checklist: props.itemData.checklist || [] }
+      : { ...formDataDefault }
     imgPreview.value = formData.value.image_url ?? '/images/img-product.png'
   },
 )
 
-// Preview image when selected
 const onPreview = async (event) => {
   const { fileObject, fileUrl } = await fileExtract(event)
   formData.value.image = fileObject
-  imgPreview.value = fileUrl // Update preview with the new image
+  imgPreview.value = fileUrl
 }
-
-// Reset image preview when clearing file input
 const onPreviewReset = () => {
   formData.value.image = null
-  imgPreview.value = '/images/img-product.png' // Reset to default placeholder image
+  imgPreview.value = '/images/img-product.png'
 }
 
-// Handle form submission
 const onSubmit = async () => {
   formAction.value = { ...formActionDefault, formProcess: true }
   try {
@@ -64,7 +61,6 @@ const onSubmit = async () => {
       ? 'Successfully updated project.'
       : 'Successfully added project.'
     await projectsStore.getProjects()
-    // Reset form after success and close dialog
     setTimeout(() => {
       onFormReset()
     }, 2500)
@@ -74,25 +70,21 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   }
 }
-
-// Validate and submit the form
 const onFormSubmit = () => {
   refVForm.value?.validate().then(({ valid }) => {
     if (valid) onSubmit()
   })
 }
-
-// Reset the form, including the image
 const onFormReset = () => {
   formAction.value = { ...formActionDefault }
   formData.value = { ...formDataDefault }
-  imgPreview.value = '/images/img-product.png' // Reset the image preview
-  emit('update:isDialogVisible', false) // Close the dialog
+  imgPreview.value = '/images/img-product.png'
+  emit('update:isDialogVisible', false)
 }
 </script>
 
 <template>
-  <v-dialog :max-width="mdAndDown ? '60vw' : '400'" :model-value="props.isDialogVisible" persistent>
+  <v-dialog :max-width="mdAndDown ? '60vw' : '430'" :model-value="props.isDialogVisible" persistent>
     <v-card prepend-icon="mdi-information-box" title="Project Information">
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
@@ -136,6 +128,38 @@ const onFormReset = () => {
                 dense
               ></v-text-field>
             </v-col>
+            <!-- Checklist Section: Steps/Milestones -->
+            <v-col cols="12">
+              <label class="mb-1" style="font-weight: 600">Steps / Milestones</label>
+              <div class="steps-milestone-wrapper">
+                <div
+                  v-for="(item, idx) in formData.checklist"
+                  :key="idx"
+                  class="d-flex align-center mb-2"
+                >
+                  <v-text-field
+                    v-model="item.label"
+                    :rules="[requiredValidator]"
+                    dense
+                    placeholder="Step description"
+                    class="mr-2"
+                    hide-details
+                  ></v-text-field>
+                  <v-btn icon @click="formData.checklist.splice(idx, 1)" color="red" size="x-small">
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
+                </div>
+                <v-btn
+                  outlined
+                  color="primary"
+                  class="mt-1 add-step-btn"
+                  @click="formData.checklist.push({ label: '', checked: false })"
+                >
+                  <v-icon left small>mdi-plus</v-icon>ADD STEP
+                </v-btn>
+              </div>
+            </v-col>
+
             <v-col cols="12" sm="6">
               <v-img
                 width="100"
@@ -173,3 +197,17 @@ const onFormReset = () => {
     </v-card>
   </v-dialog>
 </template>
+
+<style scoped>
+.steps-milestone-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 15px;
+}
+.add-step-btn {
+  width: max-content;
+  align-self: flex-start;
+  font-weight: 600;
+}
+</style>

@@ -5,32 +5,25 @@ import ProjectFormDialog from './ProjectFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const projectsStore = useProjectsStore()
+const tab = ref('one') // ← THIS IS *REQUIRED*
 
-// Load Variables
 const itemData = ref(null)
 const isDialogVisible = ref(false)
 const deleteId = ref(null)
-const isConfirmDeleteDialog = ref(false) // Added this ref
+const isConfirmDeleteDialog = ref(false)
 
-// Add project
 const onAdd = () => {
   itemData.value = null
   isDialogVisible.value = true
 }
-
-// Update project
 const onUpdate = (project) => {
   itemData.value = project
   isDialogVisible.value = true
 }
-
-// Trigger Delete Dialog
 const onDelete = (id) => {
   deleteId.value = id
-  isConfirmDeleteDialog.value = true // Set dialog visibility to true
+  isConfirmDeleteDialog.value = true
 }
-
-// Confirm Delete
 const onConfirmDelete = async () => {
   try {
     const { error } = await projectsStore.deleteProjects(deleteId.value)
@@ -38,14 +31,12 @@ const onConfirmDelete = async () => {
       console.error(error.message)
       return
     }
-    // Refresh the projects list
     await projectsStore.getProjects()
-    isConfirmDeleteDialog.value = false // Hide dialog after successful deletion
+    isConfirmDeleteDialog.value = false
   } catch (err) {
     console.error('Error deleting project:', err.message)
   }
 }
-
 onMounted(async () => {
   if (projectsStore.projects.length === 0) {
     await projectsStore.getProjects()
@@ -54,180 +45,275 @@ onMounted(async () => {
 
 const onFinish = async (id) => {
   try {
-    const project = projectsStore.projects.find((a) => a.id === id)
-    if (project) {
-      project.status = 'finished' // Update status
-    }
+    await projectsStore.updateProjects({ id, status: 'finished' })
+    await projectsStore.getProjects()
   } catch (err) {
     console.error('Error finishing project:', err.message)
   }
 }
-
+const activeProjects = computed(() => projectsStore.projects.filter((p) => p.status !== 'finished'))
 const finishedProjects = computed(() =>
-  projectsStore.projects.filter((project) => project.status === 'finished'),
+  projectsStore.projects.filter((p) => p.status === 'finished'),
 )
 
-const tab = ref('one')
+// Returns percent complete based on checked boxes
+const completionPercent = (project) => {
+  if (!project.checklist || !project.checklist.length) return 0
+  const checked = project.checklist.filter((c) => c.checked).length
+  return Math.round((checked / project.checklist.length) * 100)
+}
+const onChecklistChange = async (project, idx, val) => {
+  // Update locally, then push to backend
+  project.checklist[idx].checked = val
+  await projectsStore.updateProjects({
+    ...project,
+    checklist: project.checklist,
+  })
+  // Optionally: reload projects or update in place
+}
 </script>
 
 <template>
-  <v-card>
-    <v-tabs v-model="tab" class="auth-background tabs-head">
-      <v-tab value="one">
-        <v-card-title style="font-family: 'Poppins'; color: #095bea">
-          <b>To Do Project</b>
-          <v-icon
-            class="mdi mdi-note-minus-outline"
-            style="font-size: 25px"
-            color="red-darken-4"
-          ></v-icon>
-        </v-card-title>
-      </v-tab>
-      <v-tab value="two">
-        <v-card-title style="font-family: 'Poppins'; color: #095bea">
-          <b>Finished Project</b>
-          <v-icon
-            class="mdi mdi-note-check-outline"
-            style="font-size: 25px"
-            color="green-accent-3"
-          ></v-icon>
-        </v-card-title>
-      </v-tab>
-    </v-tabs>
+  <v-card flat>
+    <!-- Header Section -->
+    <v-card class="pa-3 header-card" flat>
+      <v-row align="center" justify="space-between">
+        <v-col cols="7">
+          <div class="header-title">Stay on Track</div>
+          <v-tabs v-model="tab" grow>
+            <v-tab value="one">
+              TO DO PROJECT
+              <span class="tab-count to-do">[ {{ activeProjects.length }} ]</span>
+            </v-tab>
+            <v-tab value="two">
+              FINISHED PROJECT
+              <span class="tab-count finished">[ {{ finishedProjects.length }} ]</span>
+            </v-tab>
+          </v-tabs>
+        </v-col>
+        <v-col cols="5" class="d-flex justify-end align-center">
+          <v-btn class="primary rounded-pill" @click="onAdd">
+            <v-icon left>mdi-plus</v-icon> CREATE PROJECT
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-card>
 
     <v-card-text>
       <v-tabs-window v-model="tab">
-        <!-- To Do Projects Tab -->
+        <!-- TO DO PROJECTS SECTION -->
         <v-tabs-window-item value="one">
-          <v-card class="mx-auto" max-width="100%" hover>
-            <v-row>
-              <v-col>
-                <v-card-item>
-                  <v-card-title> Stay on Track</v-card-title>
-                </v-card-item>
-              </v-col>
-              <v-col class="pt-5">
-                <button class="create-new-btn rounded-pill" @click="onAdd">
-                  <i class="mdi mdi-plus"></i> Create Project
-                </button></v-col
-              >
-            </v-row>
+          <v-row justify="center">
+            <v-col
+              cols="12"
+              sm="6"
+              md="6"
+              v-for="project in activeProjects"
+              :key="project.id"
+              class="d-flex justify-center"
+            >
+              <v-card class="modern-project-card" elevation="2" max-width="410">
+                <v-row no-gutters>
+                  <v-col cols="12">
+                    <div class="d-flex align-center mb-2">
+                      <v-icon color="orange" size="29" class="me-2"
+                        >mdi-lightbulb-on-outline</v-icon
+                      >
+                      <span class="modern-project-title">Project</span>
+                    </div>
+                    <!-- Checklist checkboxes... -->
+                    <div
+                      v-if="project.checklist && project.checklist.length"
+                      class="project-checklist mb-2"
+                    >
+                      <v-checkbox
+                        v-for="(item, idx) in project.checklist"
+                        :key="idx"
+                        :model-value="item.checked"
+                        :label="item.label"
+                        color="success"
+                        density="compact"
+                        hide-details
+                        @update:model-value="(val) => onChecklistChange(project, idx, val)"
+                      />
+                    </div>
 
-            <v-card-text>
-              <v-row>
-                <v-col
-                  cols="12"
-                  class="pa-4"
-                  v-for="project in projectsStore.projects.filter((p) => p.status !== 'finished')"
-                  :key="project.id"
-                >
-                  <v-card class="project-blessed" elevation="3">
-                    <v-row align="center" justify="space-between" class="px-4 py-2">
-                      <v-col cols="8">
-                        <div class="d-flex align-center mb-2">
-                          <v-icon color="orange" size="26" class="mr-1"
-                            >mdi-lightbulb-on-outline</v-icon
-                          >
-                          <span class="project-title">Project</span>
-                        </div>
-                        <div class="project-details-list">
-                          <div>
-                            <strong>Description:</strong> {{ project.description || 'N/A' }}
-                          </div>
-                          <div><strong>Notes:</strong> {{ project.additional_notes || 'N/A' }}</div>
-                          <div><strong>Due Date:</strong> {{ project.due_date || 'N/A' }}</div>
-                          <div><strong>Due Time:</strong> {{ project.due_time || 'N/A' }}</div>
-                        </div>
-                      </v-col>
-                      <v-col cols="4" class="d-flex flex-column align-end">
-                        <v-row>
-                          <v-btn
-                            color="success"
-                            @click="onFinish(project.id)"
-                            size="small"
-                            rounded
-                            class="mr-2"
-                            >FINISH PROJECT</v-btn
-                          >
-                          <v-btn icon @click="onUpdate(project)" color="black" rounded
-                            ><v-icon>mdi-pencil</v-icon></v-btn
-                          >
-                          <v-btn icon @click="onDelete(project.id)" color="red" rounded
-                            ><v-icon>mdi-delete</v-icon></v-btn
-                          >
-                        </v-row>
-                      </v-col>
-                    </v-row>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
+                    <!-- Progress bar row visual -->
+                    <div class="progress-row d-flex align-center mb-2">
+                      <v-progress-linear
+                        :model-value="completionPercent(project)"
+                        color="green"
+                        height="10"
+                        rounded
+                        bg-color="#e6f7ed"
+                        style="flex: 1; max-width: 240px; border-radius: 6px"
+                      />
+                      <span
+                        class="project-percent ms-3"
+                        style="font-size: 1.1em; font-weight: 700; color: #18b156"
+                      >
+                        {{ completionPercent(project) }}%
+                      </span>
+                    </div>
+
+                    <div class="mb-3 d-flex align-center">
+                      <span
+                        class="status-chip"
+                        :class="{
+                          progress: project.status !== 'finished',
+                          finished: project.status === 'finished',
+                        }"
+                      >
+                        {{ project.status === 'finished' ? 'FINISHED' : 'IN PROGRESS' }}
+                      </span>
+                      <span class="ms-2" style="font-size: 1.13em">{{ project.description }}</span>
+                    </div>
+                    <div class="modern-project-detail">
+                      <strong>Notes:</strong> {{ project.additional_notes }}
+                    </div>
+                    <div class="modern-project-detail">
+                      <strong>Due:</strong> {{ project.due_date }} • {{ project.due_time }}
+                    </div>
+                    <div class="btn-group mt-5">
+                      <v-btn
+                        color="success"
+                        class="rounded-lg modern-btn me-2"
+                        height="46"
+                        large
+                        @click="onFinish(project.id)"
+                        :disabled="project.status === 'finished'"
+                      >
+                        ✔ FINISH
+                      </v-btn>
+                      <v-btn
+                        color="primary"
+                        class="rounded-lg modern-btn me-2"
+                        height="46"
+                        dark
+                        large
+                        @click="onUpdate(project)"
+                      >
+                        <v-icon left>mdi-pencil</v-icon>EDIT
+                      </v-btn>
+                      <v-btn
+                        color="red"
+                        class="rounded-lg modern-btn"
+                        height="46"
+                        dark
+                        large
+                        @click="onDelete(project.id)"
+                      >
+                        <v-icon left>mdi-delete</v-icon>DELETE
+                      </v-btn>
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-card>
+            </v-col>
+          </v-row>
         </v-tabs-window-item>
-        <!-- Finished Projects Tab -->
+
+        <!-- FINISHED PROJECTS SECTION -->
         <v-tabs-window-item value="two">
-          <v-card>
-            <v-row>
-              <v-col>
-                <v-card-item>
-                  <v-card-title>It always seems impossible until it’s done.</v-card-title>
-                </v-card-item>
-                <v-card-text>
-                  <v-row>
-                    <v-col cols="12" class="pa-4 py-5">
-                      <div>
-                        <div v-if="finishedProjects.length > 0">
-                          <div v-for="project in finishedProjects" :key="project.id" class="mb-4">
-                            <!-- project Item -->
-                            <div class="d-flex justify-space-between align-center">
-                              <!-- Left Side: Description and Status -->
-                              <div>
-                                <h3 class="text-h6 mb-2">
-                                  <strong>{{ project.description }}</strong>
-                                </h3>
-                                <p class="mb-0"><strong>Status:</strong> {{ project.status }}</p>
-                              </div>
+          <v-row justify="center">
+            <v-col
+              cols="12"
+              sm="6"
+              md="6"
+              v-for="project in finishedProjects"
+              :key="project.id"
+              class="d-flex justify-center"
+            >
+              <v-card class="modern-project-card" elevation="2" max-width="410">
+                <v-row no-gutters>
+                  <v-col cols="12">
+                    <div class="d-flex align-center mb-2">
+                      <v-icon color="orange" size="29" class="me-2"
+                        >mdi-lightbulb-on-outline</v-icon
+                      >
+                      <span class="modern-project-title">Project</span>
+                    </div>
+                    <div
+                      v-if="project.checklist && project.checklist.length"
+                      class="project-checklist mb-2"
+                    >
+                      <v-checkbox
+                        v-for="(item, idx) in project.checklist"
+                        :key="idx"
+                        v-model="item.checked"
+                        :label="item.label"
+                        color="success"
+                        density="compact"
+                        hide-details
+                        disabled
+                      />
+                    </div>
+                    <div class="progress-row d-flex align-center mb-2">
+                      <v-progress-linear
+                        :model-value="completionPercent(project)"
+                        color="#1eab24"
+                        height="10"
+                        rounded
+                        style="flex: 1; max-width: 240px; border-radius: 6px"
+                        class="finished-progress"
+                      />
 
-                              <!-- Right Side: Image -->
-                              <v-img
-                                v-if="project.image_url"
-                                :src="project.image_url"
-                                height="150"
-                                width="150"
-                                class="ml-4"
-                                aspect-ratio="1"
-                              ></v-img>
-                              <v-card-actions>
-                                <v-btn
-                                  icon
-                                  variant="elevated"
-                                  density="comfortable"
-                                  color="red"
-                                  @click="onDelete(project.id)"
-                                >
-                                  <v-icon size="20">mdi-delete</v-icon>
-                                </v-btn>
-                              </v-card-actions>
-                            </div>
+                      <span
+                        class="project-percent"
+                        style="font-size: 1.15em; font-weight: 700; min-width: 38px; color: #24af53"
+                      >
+                        {{ completionPercent(project) }}%
+                      </span>
+                    </div>
 
-                            <!-- Divider -->
-                            <v-divider
-                              :thickness="2"
-                              class="border-opacity-100 mt-3"
-                              color="success"
-                            ></v-divider>
-                          </div>
-                        </div>
-                        <div v-else>
-                          <p>No finished projects available.</p>
-                        </div>
-                      </div>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-              </v-col>
-            </v-row>
-          </v-card>
+                    <div class="mb-3 d-flex align-center">
+                      <span class="status-chip finished">FINISHED</span>
+                      <span class="ms-2" style="font-size: 1.13em">{{ project.description }}</span>
+                    </div>
+                    <div class="modern-project-detail">
+                      <strong>Notes:</strong> {{ project.additional_notes }}
+                    </div>
+                    <div class="modern-project-detail">
+                      <strong>Due:</strong> {{ project.due_date }} • {{ project.due_time }}
+                    </div>
+                    <div class="btn-group mt-5">
+                      <v-btn
+                        color="success"
+                        class="rounded-lg modern-btn me-2"
+                        height="46"
+                        large
+                        disabled
+                      >
+                        ✔ FINISH
+                      </v-btn>
+                      <v-btn
+                        color="primary"
+                        class="rounded-lg modern-btn me-2"
+                        height="46"
+                        dark
+                        large
+                        @click="onUpdate(project)"
+                        :disabled="project.status === 'finished'"
+                      >
+                        <v-icon left>mdi-pencil</v-icon>EDIT
+                      </v-btn>
+
+                      <v-btn
+                        color="red"
+                        class="rounded-lg modern-btn"
+                        height="46"
+                        dark
+                        large
+                        @click="onDelete(project.id)"
+                      >
+                        <v-icon left>mdi-delete</v-icon>DELETE
+                      </v-btn>
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-card>
+            </v-col>
+          </v-row>
         </v-tabs-window-item>
       </v-tabs-window>
     </v-card-text>
@@ -237,7 +323,6 @@ const tab = ref('one')
     v-model:is-dialog-visible="isDialogVisible"
     :item-data="itemData"
   ></ProjectFormDialog>
-
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDeleteDialog"
     title="Confirm Delete"
@@ -247,44 +332,110 @@ const tab = ref('one')
 </template>
 
 <style scoped>
-/* STYLING */
-.create-new-btn {
-  background: #095bea;
-  color: white;
-  font-weight: 600;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-family: 'Poppins';
+.progress-row {
+  margin-bottom: 7px;
+  margin-top: 1px;
 }
-.project-card {
-  min-width: 300px;
-  padding: 18px 25px;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  box-shadow: none;
-  background-color: #fff;
-}
-.project-details-list > div {
-  margin-bottom: 4px;
-  font-size: 16px;
-}
-.project-blessed {
-  background: linear-gradient(135deg, #f5fcff 80%, #dbeafe 100%);
-  border-radius: 18px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  min-width: 330px;
-  transition: box-shadow 0.2s;
-}
-.project-title {
-  font-size: 1.6em;
+.project-percent {
   font-weight: 700;
-  color: #0846b2;
-  letter-spacing: 0.5px;
+  font-size: 1.12em;
+  color: #19b563;
+  letter-spacing: 0.01em;
+  margin-left: 9px;
 }
-.project-details-list > div {
-  margin-bottom: 3px;
-  font-size: 16px;
-  font-family: 'Poppins', sans-serif;
+
+.modern-project-card {
+  background: linear-gradient(115deg, #f5fcff 80%, #e8f0fc 100%);
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(40, 80, 140, 0.08);
+  padding: 30px 25px 25px 30px;
+  margin: 20px auto;
+  min-width: 330px;
+}
+.modern-project-title {
+  font-size: 1.45em;
+  font-weight: 700;
+  color: #195abc;
+  letter-spacing: 0.04em;
+}
+.progress-row {
+  margin-bottom: 8px;
+  margin-top: -10px;
+}
+.project-percent {
+  font-weight: 600;
+  font-size: 1em;
+  color: #15a753;
+  min-width: 38px;
+  text-align: right;
+  letter-spacing: 0.01em;
+}
+.project-checklist {
+  margin-top: 2px;
+  margin-bottom: 14px;
+}
+.status-chip {
+  font-size: 1em;
+  font-weight: 700;
+  padding: 4px 18px;
+  border-radius: 10px;
+  letter-spacing: 1px;
+  background: #d5e7fb;
+  color: #348ada;
+  margin-right: 12px;
+  margin-top: 0px;
+}
+.status-chip.progress {
+  background: #d5e7fb;
+  color: #348ada;
+}
+.status-chip.finished {
+  background: #b3f2c6;
+  color: #169754;
+}
+.btn-group {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 13px;
+  margin-top: 18px;
+}
+.modern-btn {
+  font-weight: 600;
+  font-size: 1.06em;
+  min-width: 90px;
+  text-transform: none;
+}
+.header-card {
+  background: linear-gradient(90deg, #f5fcff 80%, #dbeafe 100%);
+  border-radius: 18px;
+  box-shadow: 0 2px 8px 0 rgba(40, 80, 140, 0.07);
+  margin-bottom: 18px;
+}
+.header-title {
+  color: #095bea;
+  font-weight: 700;
+  font-size: 1.4em;
+}
+.tab-count {
+  margin-left: 11px;
+  font-weight: 700;
+  font-size: 0.98em;
+}
+.tab-count.to-do {
+  color: #1976d2;
+}
+.tab-count.finished {
+  color: #21ba45;
+}
+.v-btn.primary {
+  background-color: #095bea !important;
+  color: #fff !important;
+}
+@media (max-width: 600px) {
+  .btn-group {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+  }
 }
 </style>
