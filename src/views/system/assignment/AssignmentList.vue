@@ -84,24 +84,29 @@ const finishedAssignments = computed(() =>
 <template>
   <v-card flat>
     <!-- Header Section -->
-    <v-card class="pa-3 header-card" flat>
-      <v-row align="center" justify="space-between">
-        <v-col cols="7">
-          <div class="header-title">Stay on Track</div>
-          <v-tabs v-model="tab" grow>
-            <v-tab value="one">
-              TO DO ASSIGNMENT
-              <span class="tab-count to-do">[ {{ activeAssignments.length }} ]</span>
+    <v-card class="pa-4 header-card" flat>
+      <v-row align="center" justify="space-between" no-gutters>
+        <v-col cols="12" md="8">
+          <div class="header-title mb-3">Stay on Track</div>
+          <v-tabs v-model="tab" color="primary" align-tabs="start" class="custom-tabs">
+            <v-tab value="one" class="custom-tab">
+              <span class="tab-label">TO DO ASSIGNMENT</span>
+              <v-chip size="small" class="ml-2 tab-chip" color="blue-darken-2" variant="flat">
+                {{ activeAssignments.length }}
+              </v-chip>
             </v-tab>
-            <v-tab value="two">
-              FINISHED ASSIGNMENT
-              <span class="tab-count finished">[ {{ finishedAssignments.length }} ]</span>
+            <v-tab value="two" class="custom-tab">
+              <span class="tab-label">FINISHED ASSIGNMENT</span>
+              <v-chip size="small" class="ml-2 tab-chip" color="success" variant="flat">
+                {{ finishedAssignments.length }}
+              </v-chip>
             </v-tab>
           </v-tabs>
         </v-col>
-        <v-col cols="5" class="d-flex justify-end align-center">
-          <v-btn class="primary rounded-pill" @click="onAdd">
-            <v-icon left>mdi-plus</v-icon> CREATE ASSIGNMENT
+        <v-col cols="12" md="4" class="d-flex justify-end align-center mt-3 mt-md-0">
+          <v-btn class="create-btn" size="large" elevation="2" @click="onAdd">
+            <v-icon left>mdi-plus</v-icon>
+            CREATE ASSIGNMENT
           </v-btn>
         </v-col>
       </v-row>
@@ -111,113 +116,127 @@ const finishedAssignments = computed(() =>
       <v-tabs-window v-model="tab">
         <!-- To Do Assignments Tab -->
         <v-tabs-window-item value="one">
-          <v-row justify="center">
+          <v-row :justify="activeAssignments.length === 1 ? 'center' : 'start'">
             <v-col
               cols="12"
               sm="6"
-              md="6"
+              md="4"
               v-for="assignment in activeAssignments"
               :key="assignment.id"
-              class="d-flex justify-center"
             >
-              <v-card class="modern-assignment-card" elevation="2" max-width="410">
-                <v-row no-gutters>
-                  <v-col cols="12">
-                    <div class="d-flex align-center mb-2">
-                      <v-icon color="orange" size="29" class="me-2">mdi-notebook-outline</v-icon>
-                      <span class="modern-assignment-title">Assignment</span>
+              <v-card class="modern-assignment-card" elevation="2">
+                <v-card-text>
+                  <!-- Header with icon and title -->
+                  <div class="d-flex align-center mb-3">
+                    <v-icon color="orange" size="32" class="me-2">mdi-notebook-outline</v-icon>
+                    <div class="flex-grow-1">
+                      <div class="text-overline text-muted mb-0">Assignment</div>
+                      <div class="assignment-title">{{ assignment.description }}</div>
                     </div>
-
-                    <!-- Checklist checkboxes -->
-                    <div
-                      v-if="assignment.checklist && assignment.checklist.length"
-                      class="assignment-checklist mb-2"
+                    <v-chip
+                      :color="assignment.status === 'finished' ? 'success' : 'primary'"
+                      size="small"
+                      label
                     >
-                      <v-checkbox
-                        v-for="(item, idx) in assignment.checklist"
-                        :key="idx"
-                        :model-value="item.checked"
-                        :label="item.label"
-                        color="success"
-                        density="compact"
-                        hide-details
-                        @update:model-value="(val) => onChecklistChange(assignment, idx, val)"
-                      />
-                    </div>
+                      {{ assignment.status === 'finished' ? 'FINISHED' : 'IN PROGRESS' }}
+                    </v-chip>
+                  </div>
 
-                    <!-- Progress bar -->
-                    <div class="progress-row d-flex align-center mb-2">
-                      <v-progress-linear
-                        :model-value="completionPercent(assignment)"
-                        color="green"
-                        height="10"
-                        rounded
-                        bg-color="#e6f7ed"
-                        style="flex: 1; max-width: 240px; border-radius: 6px"
-                      />
-                      <span
-                        class="assignment-percent ms-3"
-                        style="font-size: 1.1em; font-weight: 700; color: #18b156"
-                      >
-                        {{ completionPercent(assignment) }}%
-                      </span>
-                    </div>
+                  <!-- No Checklist Message -->
+                  <div
+                    v-if="!assignment.checklist || assignment.checklist.length === 0"
+                    class="no-checklist-msg mb-3"
+                  >
+                    <v-icon color="grey-darken-1" size="small">mdi-information-outline</v-icon>
+                    <span class="text-caption text-muted ml-2"
+                      >No steps defined for this assignment</span
+                    >
+                  </div>
 
-                    <div class="mb-3 d-flex align-center">
-                      <span
-                        class="status-chip"
-                        :class="{
-                          progress: assignment.status !== 'finished',
-                          finished: assignment.status === 'finished',
-                        }"
-                      >
-                        {{ assignment.status === 'finished' ? 'FINISHED' : 'IN PROGRESS' }}
-                      </span>
-                      <span class="ms-2" style="font-size: 1.13em">{{
-                        assignment.description
-                      }}</span>
+                  <!-- Checklist -->
+                  <div v-else class="checklist-section mb-3">
+                    <div class="text-caption font-weight-bold mb-2 text-primary">
+                      <v-icon size="small" color="primary">mdi-format-list-checks</v-icon>
+                      Tasks ({{ assignment.checklist.filter((c) => c.checked).length }}/{{
+                        assignment.checklist.length
+                      }})
                     </div>
-                    <div class="modern-assignment-detail">
-                      <strong>Notes:</strong> {{ assignment.additional_notes }}
+                    <v-checkbox
+                      v-for="(item, idx) in assignment.checklist"
+                      :key="idx"
+                      :model-value="item.checked"
+                      :label="item.label"
+                      color="success"
+                      density="compact"
+                      hide-details
+                      class="checklist-item"
+                      @update:model-value="(val) => onChecklistChange(assignment, idx, val)"
+                    />
+                  </div>
+
+                  <!-- Progress Section -->
+                  <div class="progress-section mb-3">
+                    <div class="d-flex justify-space-between align-center mb-2">
+                      <span class="text-caption font-weight-bold text-grey-darken-2">Progress</span>
+                      <span class="progress-percent">{{ completionPercent(assignment) }}%</span>
                     </div>
-                    <div class="modern-assignment-detail">
-                      <strong>Due:</strong> {{ assignment.due_date }} • {{ assignment.due_time }}
+                    <v-progress-linear
+                      :model-value="completionPercent(assignment)"
+                      color="success"
+                      height="12"
+                      rounded
+                      bg-color="#e8f5e9"
+                    />
+                  </div>
+
+                  <!-- Details -->
+                  <v-divider class="my-3"></v-divider>
+                  <div class="details-section">
+                    <div class="detail-item mb-2">
+                      <v-icon size="small" color="grey-darken-1">mdi-text-box-outline</v-icon>
+                      <span class="text-caption ml-2"
+                        ><strong>Notes:</strong> {{ assignment.additional_notes }}</span
+                      >
                     </div>
-                    <div class="btn-group mt-5">
-                      <v-btn
-                        color="success"
-                        class="rounded-lg modern-btn me-2"
-                        height="46"
-                        large
-                        @click="onFinish(assignment.id)"
-                        :disabled="assignment.status === 'finished'"
+                    <div class="detail-item">
+                      <v-icon size="small" color="grey-darken-1">mdi-calendar-clock</v-icon>
+                      <span class="text-caption ml-2"
+                        ><strong>Due:</strong> {{ assignment.due_date }} at
+                        {{ assignment.due_time }}</span
                       >
-                        ✔ FINISH
-                      </v-btn>
-                      <v-btn
-                        color="primary"
-                        class="rounded-lg modern-btn me-2"
-                        height="46"
-                        dark
-                        large
-                        @click="onUpdate(assignment)"
-                        :disabled="assignment.status === 'finished'"
-                      >
-                        <v-icon left>mdi-pencil</v-icon>EDIT
-                      </v-btn>
-                      <v-btn
-                        color="red"
-                        class="rounded-lg modern-btn"
-                        height="46"
-                        dark
-                        large
-                        @click="onDelete(assignment.id)"
-                      >
-                        <v-icon left>mdi-delete</v-icon>DELETE
-                      </v-btn>
                     </div>
-                  </v-col>
-                </v-row>
+                  </div>
+
+                  <!-- Actions -->
+                  <div class="d-flex justify-end gap-2 mt-4">
+                    <v-btn
+                      size="small"
+                      color="success"
+                      variant="elevated"
+                      :disabled="assignment.status === 'finished'"
+                      @click="onFinish(assignment.id)"
+                    >
+                      <v-icon left size="small">mdi-check</v-icon>Finish
+                    </v-btn>
+                    <v-btn
+                      size="small"
+                      color="primary"
+                      variant="elevated"
+                      :disabled="assignment.status === 'finished'"
+                      @click="onUpdate(assignment)"
+                    >
+                      <v-icon left size="small">mdi-pencil</v-icon>Edit
+                    </v-btn>
+                    <v-btn
+                      size="small"
+                      color="error"
+                      variant="elevated"
+                      @click="onDelete(assignment.id)"
+                    >
+                      <v-icon left size="small">mdi-delete</v-icon>Delete
+                    </v-btn>
+                  </div>
+                </v-card-text>
               </v-card>
             </v-col>
           </v-row>
@@ -225,104 +244,102 @@ const finishedAssignments = computed(() =>
 
         <!-- Finished Assignments Tab -->
         <v-tabs-window-item value="two">
-          <v-row justify="center">
+          <v-row :justify="finishedAssignments.length === 1 ? 'center' : 'start'">
             <v-col
               cols="12"
               sm="6"
-              md="6"
+              md="4"
               v-for="assignment in finishedAssignments"
               :key="assignment.id"
-              class="d-flex justify-center"
             >
-              <v-card class="modern-assignment-card" elevation="2" max-width="410">
-                <v-row no-gutters>
-                  <v-col cols="12">
-                    <div class="d-flex align-center mb-2">
-                      <v-icon color="orange" size="29" class="me-2">mdi-notebook-outline</v-icon>
-                      <span class="modern-assignment-title">Assignment</span>
+              <v-card class="modern-assignment-card finished-card" elevation="2">
+                <v-card-text>
+                  <!-- Header -->
+                  <div class="d-flex align-center mb-3">
+                    <v-icon color="success" size="32" class="me-2">mdi-check-circle</v-icon>
+                    <div class="flex-grow-1">
+                      <div class="text-overline text-muted mb-0">Assignment</div>
+                      <div class="assignment-title">{{ assignment.description }}</div>
                     </div>
+                    <v-chip color="success" size="small" label>FINISHED</v-chip>
+                  </div>
 
-                    <!-- Disabled checkboxes for finished -->
-                    <div
-                      v-if="assignment.checklist && assignment.checklist.length"
-                      class="assignment-checklist mb-2"
+                  <!-- Disabled Checklist -->
+                  <div
+                    v-if="assignment.checklist && assignment.checklist.length"
+                    class="checklist-section mb-3 finished-checklist"
+                  >
+                    <div class="text-caption font-weight-bold mb-2 text-success">
+                      <v-icon size="small" color="success">mdi-check-all</v-icon>
+                      All Tasks Completed ({{ assignment.checklist.length }}/{{
+                        assignment.checklist.length
+                      }})
+                    </div>
+                    <v-checkbox
+                      v-for="(item, idx) in assignment.checklist"
+                      :key="idx"
+                      v-model="item.checked"
+                      :label="item.label"
+                      color="success"
+                      density="compact"
+                      hide-details
+                      disabled
+                      class="checklist-item"
+                    />
+                  </div>
+
+                  <!-- Progress (100%) -->
+                  <div class="progress-section mb-3">
+                    <div class="d-flex justify-space-between align-center mb-2">
+                      <span class="text-caption font-weight-bold text-success">Completed!</span>
+                      <span class="progress-percent text-success"
+                        >{{ completionPercent(assignment) }}%</span
+                      >
+                    </div>
+                    <v-progress-linear
+                      :model-value="completionPercent(assignment)"
+                      color="success"
+                      height="12"
+                      rounded
+                      bg-color="#e8f5e9"
+                    />
+                  </div>
+
+                  <!-- Details -->
+                  <v-divider class="my-3"></v-divider>
+                  <div class="details-section">
+                    <div class="detail-item mb-2">
+                      <v-icon size="small" color="grey-darken-1">mdi-text-box-outline</v-icon>
+                      <span class="text-caption ml-2"
+                        ><strong>Notes:</strong> {{ assignment.additional_notes }}</span
+                      >
+                    </div>
+                    <div class="detail-item">
+                      <v-icon size="small" color="grey-darken-1">mdi-calendar-check</v-icon>
+                      <span class="text-caption ml-2"
+                        ><strong>Completed:</strong> {{ assignment.due_date }}</span
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Actions (Disabled) -->
+                  <div class="d-flex justify-end gap-2 mt-4">
+                    <v-btn size="small" color="success" variant="elevated" disabled>
+                      <v-icon left size="small">mdi-check</v-icon>Finish
+                    </v-btn>
+                    <v-btn size="small" color="primary" variant="elevated" disabled>
+                      <v-icon left size="small">mdi-pencil</v-icon>Edit
+                    </v-btn>
+                    <v-btn
+                      size="small"
+                      color="error"
+                      variant="elevated"
+                      @click="onDelete(assignment.id)"
                     >
-                      <v-checkbox
-                        v-for="(item, idx) in assignment.checklist"
-                        :key="idx"
-                        v-model="item.checked"
-                        :label="item.label"
-                        color="success"
-                        density="compact"
-                        hide-details
-                        disabled
-                      />
-                    </div>
-
-                    <!-- Progress bar (darker green for finished) -->
-                    <div class="progress-row d-flex align-center mb-2">
-                      <v-progress-linear
-                        :model-value="completionPercent(assignment)"
-                        color="#199e38"
-                        height="10"
-                        rounded
-                        bg-color="#d0e8d4"
-                        style="flex: 1; max-width: 240px; border-radius: 6px"
-                        class="finished-progress"
-                      />
-                      <span
-                        class="assignment-percent"
-                        style="font-size: 1.15em; font-weight: 700; min-width: 38px; color: #189e38"
-                      >
-                        {{ completionPercent(assignment) }}%
-                      </span>
-                    </div>
-
-                    <div class="mb-3 d-flex align-center">
-                      <span class="status-chip finished">FINISHED</span>
-                      <span class="ms-2" style="font-size: 1.13em">{{
-                        assignment.description
-                      }}</span>
-                    </div>
-                    <div class="modern-assignment-detail">
-                      <strong>Notes:</strong> {{ assignment.additional_notes }}
-                    </div>
-                    <div class="modern-assignment-detail">
-                      <strong>Due:</strong> {{ assignment.due_date }} • {{ assignment.due_time }}
-                    </div>
-                    <div class="btn-group mt-5">
-                      <v-btn
-                        color="success"
-                        class="rounded-lg modern-btn me-2"
-                        height="46"
-                        large
-                        disabled
-                      >
-                        ✔ FINISH
-                      </v-btn>
-                      <v-btn
-                        color="primary"
-                        class="rounded-lg modern-btn me-2"
-                        height="46"
-                        dark
-                        large
-                        disabled
-                      >
-                        <v-icon left>mdi-pencil</v-icon>EDIT
-                      </v-btn>
-                      <v-btn
-                        color="red"
-                        class="rounded-lg modern-btn"
-                        height="46"
-                        dark
-                        large
-                        @click="onDelete(assignment.id)"
-                      >
-                        <v-icon left>mdi-delete</v-icon>DELETE
-                      </v-btn>
-                    </div>
-                  </v-col>
-                </v-row>
+                      <v-icon left size="small">mdi-delete</v-icon>Delete
+                    </v-btn>
+                  </div>
+                </v-card-text>
               </v-card>
             </v-col>
           </v-row>
@@ -345,103 +362,177 @@ const finishedAssignments = computed(() =>
 </template>
 
 <style scoped>
-.finished-progress .v-progress-linear__determinate {
-  background-color: #199e38 !important;
-}
-.finished-progress {
-  opacity: 1 !important;
-}
-.progress-row {
-  margin-bottom: 7px;
-  margin-top: 1px;
-}
-.assignment-percent {
-  font-weight: 700;
-  font-size: 1.12em;
-  color: #19b563;
-  letter-spacing: 0.01em;
-  margin-left: 9px;
-}
-.modern-assignment-card {
-  background: linear-gradient(115deg, #f5fcff 80%, #e8f0fc 100%);
-  border-radius: 18px;
-  box-shadow: 0 4px 20px rgba(40, 80, 140, 0.08);
-  padding: 30px 25px 25px 30px;
-  margin: 20px auto;
-  min-width: 330px;
-}
-.modern-assignment-title {
-  font-size: 1.45em;
-  font-weight: 700;
-  color: #195abc;
-  letter-spacing: 0.04em;
-}
-.assignment-checklist {
-  margin-top: 2px;
-  margin-bottom: 14px;
-}
-.status-chip {
-  font-size: 1em;
-  font-weight: 700;
-  padding: 4px 18px;
-  border-radius: 10px;
-  letter-spacing: 1px;
-  background: #d5e7fb;
-  color: #348ada;
-  margin-right: 12px;
-  margin-top: 0px;
-}
-.status-chip.progress {
-  background: #d5e7fb;
-  color: #348ada;
-}
-.status-chip.finished {
-  background: #b3f2c6;
-  color: #169754;
-}
-.btn-group {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 13px;
-  margin-top: 18px;
-}
-.modern-btn {
-  font-weight: 600;
-  font-size: 1.06em;
-  min-width: 90px;
-  text-transform: none;
-}
 .header-card {
-  background: linear-gradient(90deg, #f5fcff 80%, #dbeafe 100%);
-  border-radius: 18px;
-  box-shadow: 0 2px 8px 0 rgba(40, 80, 140, 0.07);
-  margin-bottom: 18px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  margin-bottom: 24px;
+  color: white;
 }
+
 .header-title {
-  color: #095bea;
+  color: white;
   font-weight: 700;
-  font-size: 1.4em;
+  font-size: 2rem;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.custom-tabs {
+  background: transparent;
+}
+
+.custom-tab {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  padding: 0 24px;
+  min-height: 48px;
+}
+
+.custom-tab.v-tab--selected {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px 8px 0 0;
+}
+
+.tab-label {
+  font-weight: 600;
+}
+
+.tab-chip {
+  font-weight: 700;
+  min-width: 32px;
+  height: 24px;
+}
+
+.create-btn {
+  background: white !important;
+  color: #667eea !important;
+  font-weight: 600;
+  padding: 0 24px !important;
+  border-radius: 12px;
+  text-transform: none;
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+.create-btn:hover {
+  background: #f5f5f5 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+  .header-title {
+    font-size: 1.5rem;
+  }
+
+  .custom-tab {
+    font-size: 0.8rem;
+    padding: 0 12px;
+  }
+
+  .create-btn {
+    width: 100%;
+  }
+}
+
 .tab-count {
   margin-left: 11px;
   font-weight: 700;
   font-size: 0.98em;
 }
+
 .tab-count.to-do {
   color: #1976d2;
 }
+
 .tab-count.finished {
   color: #21ba45;
 }
+
 .v-btn.primary {
   background-color: #095bea !important;
   color: #fff !important;
 }
-@media (max-width: 600px) {
-  .btn-group {
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 12px;
-  }
+
+.modern-assignment-card {
+  border-radius: 16px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.modern-assignment-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.finished-card {
+  background: linear-gradient(135deg, #f1f8f4 0%, #e8f5e9 100%);
+  opacity: 0.95;
+}
+
+.assignment-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1a237e;
+  line-height: 1.3;
+}
+
+.no-checklist-msg {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  background: #fff3e0;
+  border-radius: 8px;
+  border-left: 4px solid #ff9800;
+}
+
+.checklist-section {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+.finished-checklist {
+  background: #f1f8f4;
+  border: 1px solid #c8e6c9;
+}
+
+.checklist-item {
+  margin-bottom: -8px;
+}
+
+.progress-section {
+  background: #fafafa;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+.progress-percent {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #4caf50;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.text-muted {
+  color: #757575;
+}
+
+.gap-2 {
+  gap: 8px;
 }
 </style>
