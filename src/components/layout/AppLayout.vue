@@ -66,11 +66,22 @@ const visible = ref(false) // Define visible here
 </template>
 
 <style scoped>
-main {
-  background-color: white; /* Set background color to white */
+/* App bar */
+.v-app-bar {
+  background-color: #006400 !important;
+  color: #ffd700 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-top: 4px solid #0b6623;
 }
 
-/* Bounce animation */
+/* Footer */
+.v-footer {
+  background-color: #006400 !important;
+  color: #ffd700 !important;
+  font-weight: 500;
+}
+
+/* Bounce animation (unchanged) */
 @keyframes bounce {
   0%,
   100% {
@@ -85,18 +96,19 @@ main {
   animation: bounce 2.5s infinite;
 }
 
-/* Apply a custom font to the entire app */
+/* Global font */
 v-app {
   font-family: 'Roboto', sans-serif;
 }
 
-/* Customize header fonts */
+/* Typography */
 h1,
 h2,
 h3 {
   font-family: 'Open Sans', sans-serif;
   font-weight: bold;
 }
+
 h1 {
   font-size: 40px;
 }
@@ -109,24 +121,25 @@ h5 {
   font-size: 15px;
 }
 
-/* Apply custom styles to the paragraph */
+/* Paragraph text */
 .text-center {
   font-family: 'Lora', serif;
 }
 
-/* Customize other text styles */
+/* Subtitles */
 .text-subtitle-1 {
   font-family: 'Arial', sans-serif;
   font-weight: 400;
 }
-/* Navigation Header Styles */
+
+/* Navbar Logo Text */
 .text-logo {
   font-size: 35px;
   font-weight: 900;
-  color: rgb(82, 80, 80);
+  color: #ffd700;
 }
 
 .text-logos {
-  color: rgb(38, 0, 255);
+  color: white;
 }
 </style>
