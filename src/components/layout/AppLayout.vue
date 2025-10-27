@@ -38,7 +38,7 @@ const visible = ref(false) // Define visible here
         </v-app-bar-nav-icon>
 
         <!-- Move the image next to the menu -->
-        <v-img src="/images/AcaTrail.png" alt="AcaTrail Logo" height="50" contain class="ml-2" />
+        <v-img src="/images/logo.png" alt="AcaTrail Logo" height="100" class="ml-2" />
         <span class="text-logo ms-2">Aca<span class="text-logos">Trail</span></span>
         <v-spacer></v-spacer>
         <v-spacer></v-spacer>

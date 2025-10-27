@@ -92,6 +92,24 @@ const onFormSubmit = () => {
       :rules="[requiredValidator]"
     ></v-text-field>
 
-    <v-btn type="submit" class="mb-4" color="blue" size="large" block> Log In </v-btn>
+    <v-btn type="submit" class="csu-login-btn mb-4" size="large" block>Log In</v-btn>
   </v-form>
 </template>
+
+<style scoped>
+.csu-login-btn {
+  background-color: #006400 !important;
+  color: #ffd700 !important;
+  font-weight: 700;
+  font-size: 17px;
+  border-radius: 10px;
+  letter-spacing: 1px;
+  margin-top: 8px;
+  box-shadow: 0 3px 14px rgba(0, 64, 32, 0.08);
+  transition: background 0.2s;
+}
+.csu-login-btn:hover,
+.csu-login-btn:focus {
+  background-color: #034d15 !important; /* darken on hover/focus */
+}
+</style>

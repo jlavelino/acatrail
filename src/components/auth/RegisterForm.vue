@@ -166,7 +166,7 @@ const visible = ref(false) // Default visibility for passwords
     <!-- Submit Button -->
     <v-btn
       type="submit"
-      class="mb-4"
+      class="csu-register-btn mb-4"
       color="blue"
       size="large"
       block
@@ -177,3 +177,20 @@ const visible = ref(false) // Default visibility for passwords
     </v-btn>
   </v-form>
 </template>
+<style scoped>
+.csu-register-btn {
+  background-color: #006400 !important;
+  color: #ffd700 !important;
+  font-weight: 700;
+  font-size: 17px;
+  border-radius: 10px;
+  letter-spacing: 1px;
+  margin-top: 8px;
+  box-shadow: 0 3px 14px rgba(0, 64, 32, 0.08);
+  transition: background 0.2s;
+}
+.csu-register-btn:hover,
+.csu-register-btn:focus {
+  background-color: #034d15 !important; /* darken on hover/focus */
+}
+</style>
